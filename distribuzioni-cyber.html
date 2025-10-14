@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Statistiche & Cybersecurity – Distribuzioni su un dataset di eventi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Cos'è un dataset, cos'è una distribuzione e perché contano in cybersecurity. Esempio pratico con tabelle percentuali." />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="px-6 py-4 bg-white border-b">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="index.html" class="text-xl font-bold hover:underline">Il Mio Blog</a>
+      <nav class="text-sm text-gray-600 space-x-4">
+        <a href="index.html" class="hover:underline">Home</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <article class="bg-white rounded-lg shadow p-6">
+      <h1 class="text-3xl font-bold">Distribuzioni e Dataset in Cybersecurity</h1>
+      <div class="text-sm text-gray-500 mt-1">
+        Argomento: Cyber Security • Autore: Salvatore Salis • Pubblicato: 06/10/2025 12:00
+      </div>
+
+      <!-- Intro -->
+      <div class="prose max-w-none mt-6">
+        <p class="text-gray-800">
+          In cybersecurity analizziamo grandi volumi di eventi (login, allarmi, traffico, ecc.). Per dare senso a questi dati
+          usiamo due concetti base: <strong>dataset</strong> e <strong>distribuzione</strong>.
+        </p>
+
+        <h2 class="text-2xl font-semibold mt-8">Cos’è un dataset</h2>
+        <p>
+          Un <strong>dataset</strong> è una tabella di osservazioni (righe) descritte da variabili (colonne).
+          Nel nostro esempio, ogni riga è un evento di sicurezza; le colonne sono <code>severity</code>,
+          <code>attack_vector</code> e <code>country</code>. Avere un dataset chiaro significa poter
+          filtrare, contare, confrontare nel tempo e cercare anomalie.
+        </p>
+
+        <h2 class="text-2xl font-semibold mt-8">Cos’è una distribuzione (in parole semplici)</h2>
+        <p>
+          La <strong>distribuzione</strong> descrive come i valori di una variabile si “spalmano” nel dataset.
+          Ad esempio, su 41 eventi totali, sapere quanti sono <em>high/medium/low</em> ci dà subito il quadro di rischio.
+          Spesso convertiamo i conteggi in <strong>percentuali</strong> con la formula:
+          <code>(freq / totale) × 100</code>, così possiamo comparare periodi o ambienti diversi.
+        </p>
+
+        <h2 class="text-2xl font-semibold mt-8" id="analisi">Analisi del nostro DB (41 eventi)</h2>
+        <p class="text-gray-600">
+          Le tabelle sotto riportano sia il conteggio (freq) sia la percentuale sul totale (41), arrotondata a due decimali.
+        </p>
+      </div>
+
+      <!-- 1) Severity -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">1) Distribuzione <code>severity</code></h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT severity AS value, COUNT(*) AS freq
+FROM logs
+GROUP BY severity;</pre>
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">severity</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">perc (%)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="px-4 py-2">high</td>
+                <td class="px-4 py-2 text-right">15</td>
+                <td class="px-4 py-2 text-right">36.59</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">medium</td>
+                <td class="px-4 py-2 text-right">15</td>
+                <td class="px-4 py-2 text-right">36.59</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">low</td>
+                <td class="px-4 py-2 text-right">11</td>
+                <td class="px-4 py-2 text-right">26.83</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 2) Attack Vector -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">2) Distribuzione <code>attack_vector</code></h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT attack_vector AS value, COUNT(*) AS freq
+FROM logs
+GROUP BY attack_vector;</pre>
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">attack_vector</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">perc (%)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="px-4 py-2">phishing</td>
+                <td class="px-4 py-2 text-right">12</td>
+                <td class="px-4 py-2 text-right">29.27</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">malware</td>
+                <td class="px-4 py-2 text-right">11</td>
+                <td class="px-4 py-2 text-right">26.83</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">ddos</td>
+                <td class="px-4 py-2 text-right">10</td>
+                <td class="px-4 py-2 text-right">24.39</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">ransomware</td>
+                <td class="px-4 py-2 text-right">8</td>
+                <td class="px-4 py-2 text-right">19.51</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3) Country -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">3) Distribuzione <code>country</code></h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT country AS value, COUNT(*) AS freq
+FROM logs
+GROUP BY country;</pre>
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">country</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">perc (%)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="px-4 py-2">IT</td>
+                <td class="px-4 py-2 text-right">9</td>
+                <td class="px-4 py-2 text-right">21.95</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">US</td>
+                <td class="px-4 py-2 text-right">8</td>
+                <td class="px-4 py-2 text-right">19.51</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">ES</td>
+                <td class="px-4 py-2 text-right">7</td>
+                <td class="px-4 py-2 text-right">17.07</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">DE</td>
+                <td class="px-4 py-2 text-right">6</td>
+                <td class="px-4 py-2 text-right">14.63</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">FR</td>
+                <td class="px-4 py-2 text-right">6</td>
+                <td class="px-4 py-2 text-right">14.63</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2">UK</td>
+                <td class="px-4 py-2 text-right">5</td>
+                <td class="px-4 py-2 text-right">12.20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4) Bivariata -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">4) Distribuzione bivariata <code>severity × attack_vector</code></h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT severity, attack_vector, COUNT(*) AS freq
+FROM logs
+GROUP BY severity, attack_vector
+ORDER BY freq DESC, severity, attack_vector;</pre>
+        <div class="mt-4 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">severity</th>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">attack_vector</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">perc (%)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr><td class="px-4 py-2">high</td><td class="px-4 py-2">ransomware</td><td class="px-4 py-2 text-right">6</td><td class="px-4 py-2 text-right">14.63</td></tr>
+              <tr><td class="px-4 py-2">medium</td><td class="px-4 py-2">malware</td><td class="px-4 py-2 text-right">6</td><td class="px-4 py-2 text-right">14.63</td></tr>
+              <tr><td class="px-4 py-2">high</td><td class="px-4 py-2">ddos</td><td class="px-4 py-2 text-right">5</td><td class="px-4 py-2 text-right">12.20</td></tr>
+              <tr><td class="px-4 py-2">low</td><td class="px-4 py-2">phishing</td><td class="px-4 py-2 text-right">5</td><td class="px-4 py-2 text-right">12.20</td></tr>
+              <tr><td class="px-4 py-2">low</td><td class="px-4 py-2">malware</td><td class="px-4 py-2 text-right">4</td><td class="px-4 py-2 text-right">9.76</td></tr>
+              <tr><td class="px-4 py-2">medium</td><td class="px-4 py-2">ddos</td><td class="px-4 py-2 text-right">4</td><td class="px-4 py-2 text-right">9.76</td></tr>
+              <tr><td class="px-4 py-2">medium</td><td class="px-4 py-2">phishing</td><td class="px-4 py-2 text-right">4</td><td class="px-4 py-2 text-right">9.76</td></tr>
+              <tr><td class="px-4 py-2">high</td><td class="px-4 py-2">phishing</td><td class="px-4 py-2 text-right">3</td><td class="px-4 py-2 text-right">7.32</td></tr>
+              <tr><td class="px-4 py-2">high</td><td class="px-4 py-2">malware</td><td class="px-4 py-2 text-right">1</td><td class="px-4 py-2 text-right">2.44</td></tr>
+              <tr><td class="px-4 py-2">low</td><td class="px-4 py-2">ddos</td><td class="px-4 py-2 text-right">1</td><td class="px-4 py-2 text-right">2.44</td></tr>
+              <tr><td class="px-4 py-2">low</td><td class="px-4 py-2">ransomware</td><td class="px-4 py-2 text-right">1</td><td class="px-4 py-2 text-right">2.44</td></tr>
+              <tr><td class="px-4 py-2">medium</td><td class="px-4 py-2">ransomware</td><td class="px-4 py-2 text-right">1</td><td class="px-4 py-2 text-right">2.44</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-gray-600 mt-4">
+          <strong>Nota metodologica:</strong> percentuale calcolata come <code>ROUND(100.0 * freq / 41, 2)</code>.
+          In SQL generico: <code>ROUND(100.0 * COUNT(*) / (SELECT COUNT(*) FROM logs), 2)</code>.
+        </p>
+      </section>
+    </article>
+
+    <div class="mt-8">
+      <a href="index.html" class="text-blue-600 hover:underline">← Torna alla Home</a>
+    </div>
+  </main>
+</body>
+</html>
