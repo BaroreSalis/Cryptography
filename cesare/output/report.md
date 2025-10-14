@@ -2,7 +2,6 @@
 - File sorgente: **input.txt**
 - Normalizzazione: solo lettere A–Z (accenti rimossi), N = **1973**
 - Shift usato per cifrare: **7**
-- Shift stimato via frequenze (chi²): **19**
 
 ## Estratti
 ### Ciphertext
@@ -24,5 +23,3 @@ LACYBERSECURITYRAPPRESENTASOPRATTUTTODALLAVVENTODIINTERNETUNODEISETTORIDIMAGGIOR
 - `output/decrypted.txt`
 - `output/source_freq.csv`
 - `output/cipher_freq.csv`
-
-_Nota: con testi molto brevi l’analisi di frequenza può essere imprecisa. Usare testi più lunghi migliora lo stimatore._

@@ -1,177 +1,235 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dataset, Distribuzioni e Cifrario di Cesare – Analisi statistica in Cybersecurity</title>
+  <title>Dataset, Distributions and Caesar Cipher – Statistical Analysis in Cybersecurity</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Analisi statistica di dataset e distribuzione delle lettere applicata alla cybersecurity. Dimostrazione pratica con database e cifrario di Cesare." />
+  <meta name="description" content="Statistical analysis of a security event dataset and letter distributions using the Caesar cipher. A practical example for academic use." />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 <body class="bg-gray-50">
   <!-- HEADER -->
   <header class="px-6 py-4 bg-white border-b shadow-sm">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <a href="index.html" class="text-xl font-bold hover:underline">CyberStats Blog</a>
+      <a href="index.html" class="text-xl font-bold hover:underline">Il Mio Blog</a>
       <nav class="text-sm text-gray-600 space-x-4">
-        <a href="#intro" class="hover:underline">Introduzione</a>
-        <a href="#db" class="hover:underline">Dataset & Distribuzioni</a>
-        <a href="#cesare" class="hover:underline">Cifrario di Cesare</a>
+        <a href="#intro" class="hover:underline">Introduction</a>
+        <a href="#db" class="hover:underline">Dataset & Distributions</a>
+        <a href="#cesare" class="hover:underline">Caesar Cipher</a>
       </nav>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-6 py-8">
+    <!-- INTRO -->
     <article class="bg-white rounded-lg shadow p-6">
-      <h1 id="intro" class="text-3xl font-bold mb-2">Analisi di Dataset e Distribuzioni in Cybersecurity</h1>
+      <h1 id="intro" class="text-3xl font-bold mb-2">Dataset and Distribution Analysis in Cybersecurity</h1>
       <div class="text-sm text-gray-500 mb-6">
-        Corso di Metodi Statistici per la Sicurezza – <strong>Autore:</strong> Salvatore Salis – <strong>Data:</strong> 14/10/2025
+        Subject: Cyber Security — <strong>Author:</strong> Salvatore Salis — <strong>Date:</strong> 14/10/2025
       </div>
 
       <p class="text-gray-700">
-        La cybersecurity è oggi uno dei campi in cui la statistica trova applicazioni pratiche quotidiane.
-        Dalla raccolta dei log al rilevamento delle anomalie, la capacità di leggere e interpretare i dati
-        è essenziale per comprendere dove e come si manifestano le minacce.
-      </p>
-
-      <p class="text-gray-700 mt-4">
-        In questa analisi vedremo due approcci complementari:
+        Cybersecurity produces large amounts of data (logs, alerts, traffic). Statistics allow us to turn
+        these signals into operational knowledge. This page presents two concise and educational applications:
       </p>
       <ol class="list-decimal pl-6 mt-2 text-gray-700">
-        <li><strong>Analisi di un dataset</strong> di eventi di sicurezza (distribuzioni univariate e bivariate).</li>
-        <li><strong>Analisi della distribuzione delle lettere</strong> in un testo, applicata al <em>cifrario di Cesare</em>.</li>
+        <li><strong>Part 1</strong> — Descriptive analysis of a small event dataset (univariate and bivariate distributions).</li>
+        <li><strong>Part 2</strong> — Analysis of the <em>letter frequency distribution</em> and decryption of a text encrypted with the <em>Caesar cipher</em>.</li>
       </ol>
 
-      <p class="text-gray-600 italic mt-4">
-        Entrambe le sezioni mirano a mostrare come un approccio basato su distribuzioni e frequenze possa
-        trasformare dati grezzi in conoscenza utile alla sicurezza informatica.
-      </p>
+      <div class="grid md:grid-cols-3 gap-3 mt-4 text-sm text-gray-600">
+        <a class="block bg-gray-50 p-3 border rounded hover:bg-gray-100" href="#db">Go to Part 1</a>
+        <a class="block bg-gray-50 p-3 border rounded hover:bg-gray-100" href="#cesare">Go to Part 2</a>
+        <a class="block bg-gray-50 p-3 border rounded hover:bg-gray-100" href="cesare/output/report.md">Open Markdown Report</a>
+      </div>
     </article>
 
-    <!-- PARTE 1: DB e Distribuzioni -->
+    <!-- PART 1: DB & DISTRIBUTIONS -->
     <article id="db" class="bg-white rounded-lg shadow p-6 mt-10">
-      <h2 class="text-2xl font-semibold">Parte 1 — Dataset e Distribuzioni di Eventi di Sicurezza</h2>
+      <h2 class="text-2xl font-semibold">Part 1 — Security Event Dataset and Distributions (N = 41)</h2>
 
       <p class="text-gray-700 mt-2">
-        Ogni sistema informatico produce continuamente dati: tentativi di accesso, connessioni di rete,
-        allarmi e messaggi di log. Per comprenderne il comportamento serve uno strumento statistico:
-        la <strong>distribuzione</strong>, ovvero come i valori di una variabile (es. gravità o vettore d’attacco)
-        si ripartiscono nel dataset.
+        The dataset contains 41 events with three categorical variables: <code>severity</code>, <code>attack_vector</code>, <code>country</code>.
+        Below are the SQL (SQLite) queries and the corresponding tables showing absolute and percentage frequencies
+        (<code>(freq / 41) × 100</code>, rounded to two decimals).
       </p>
 
-      <p class="text-gray-700 mt-4">
-        L’analisi seguente si basa su un piccolo database simulato di <strong>41 eventi</strong>, 
-        analizzati con SQLite per calcolare le distribuzioni di:
-      </p>
-      <ul class="list-disc pl-6 text-gray-700 mt-2">
-        <li><code>severity</code> – livello di gravità (high, medium, low)</li>
-        <li><code>attack_vector</code> – tipologia di attacco</li>
-        <li><code>country</code> – provenienza dell’evento</li>
-      </ul>
+      <!-- Severity -->
+      <section class="mt-6">
+        <h3 class="text-xl font-semibold">1) <code>severity</code> distribution</h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT severity AS value, COUNT(*) AS freq
+FROM logs
+GROUP BY severity;</pre>
+        <div class="mt-3 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Severity</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">Freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">%</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr><td class="px-4 py-2">High</td><td class="px-4 py-2 text-right">15</td><td class="px-4 py-2 text-right">36.59</td></tr>
+              <tr><td class="px-4 py-2">Medium</td><td class="px-4 py-2 text-right">15</td><td class="px-4 py-2 text-right">36.59</td></tr>
+              <tr><td class="px-4 py-2">Low</td><td class="px-4 py-2 text-right">11</td><td class="px-4 py-2 text-right">26.83</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-      <p class="text-gray-600 mt-4">
-        Per ogni distribuzione, è riportata anche la percentuale sul totale:
-        <code>(freq / 41) × 100</code>.
-      </p>
+      <!-- Attack vector -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">2) <code>attack_vector</code> distribution</h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT attack_vector AS value, COUNT(*) AS freq
+FROM logs
+GROUP BY attack_vector;</pre>
+        <div class="mt-3 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Attack Vector</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">Freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">%</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr><td class="px-4 py-2">Phishing</td><td class="px-4 py-2 text-right">12</td><td class="px-4 py-2 text-right">29.27</td></tr>
+              <tr><td class="px-4 py-2">Malware</td><td class="px-4 py-2 text-right">11</td><td class="px-4 py-2 text-right">26.83</td></tr>
+              <tr><td class="px-4 py-2">DDoS</td><td class="px-4 py-2 text-right">10</td><td class="px-4 py-2 text-right">24.39</td></tr>
+              <tr><td class="px-4 py-2">Ransomware</td><td class="px-4 py-2 text-right">8</td><td class="px-4 py-2 text-right">19.51</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-      <!-- Tabelle come nella tua versione precedente -->
-      <!-- Inserisci qui le tabelle univariate e bivariate già pronte (le lascio identiche alla tua versione “universitaria”) -->
-      <!-- ... [omesse per brevità ma restano identiche al blocco HTML che hai già] ... -->
+      <!-- Country -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">3) <code>country</code> distribution</h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT country AS value, COUNT(*) AS freq
+FROM logs
+GROUP BY country;</pre>
+        <div class="mt-3 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Country</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">Freq</th>
+                <th class="px-4 py-2 text-right text-sm font-semibold text-gray-700">%</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr><td class="px-4 py-2">IT</td><td class="px-4 py-2 text-right">9</td><td class="px-4 py-2 text-right">21.95</td></tr>
+              <tr><td class="px-4 py-2">US</td><td class="px-4 py-2 text-right">8</td><td class="px-4 py-2 text-right">19.51</td></tr>
+              <tr><td class="px-4 py-2">ES</td><td class="px-4 py-2 text-right">7</td><td class="px-4 py-2 text-right">17.07</td></tr>
+              <tr><td class="px-4 py-2">DE</td><td class="px-4 py-2 text-right">6</td><td class="px-4 py-2 text-right">14.63</td></tr>
+              <tr><td class="px-4 py-2">FR</td><td class="px-4 py-2 text-right">6</td><td class="px-4 py-2 text-right">14.63</td></tr>
+              <tr><td class="px-4 py-2">UK</td><td class="px-4 py-2 text-right">5</td><td class="px-4 py-2 text-right">12.20</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Bivariate -->
+      <section class="mt-8">
+        <h3 class="text-xl font-semibold">4) Bivariate distribution <code>severity × attack_vector</code></h3>
+        <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SELECT severity, attack_vector, COUNT(*) AS freq
+FROM logs
+GROUP BY severity, attack_vector
+ORDER BY freq DESC;</pre>
+        <div class="mt-3 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 divide-y divide-gray-200 text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-3 py-2 text-left font-semibold text-gray-700">Severity</th>
+                <th class="px-3 py-2 text-left font-semibold text-gray-700">Attack Vector</th>
+                <th class="px-3 py-2 text-right font-semibold text-gray-700">Freq</th>
+                <th class="px-3 py-2 text-right font-semibold text-gray-700">%</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr><td class="px-3 py-2">High</td><td class="px-3 py-2">Ransomware</td><td class="px-3 py-2 text-right">6</td><td class="px-3 py-2 text-right">14.63</td></tr>
+              <tr><td class="px-3 py-2">Medium</td><td class="px-3 py-2">Malware</td><td class="px-3 py-2 text-right">6</td><td class="px-3 py-2 text-right">14.63</td></tr>
+              <tr><td class="px-3 py-2">High</td><td class="px-3 py-2">DDoS</td><td class="px-3 py-2 text-right">5</td><td class="px-3 py-2 text-right">12.20</td></tr>
+              <tr><td class="px-3 py-2">Low</td><td class="px-3 py-2">Phishing</td><td class="px-3 py-2 text-right">5</td><td class="px-3 py-2 text-right">12.20</td></tr>
+              <tr><td class="px-3 py-2">Low</td><td class="px-3 py-2">Malware</td><td class="px-3 py-2 text-right">4</td><td class="px-3 py-2 text-right">9.76</td></tr>
+              <tr><td class="px-3 py-2">Medium</td><td class="px-3 py-2">DDoS</td><td class="px-3 py-2 text-right">4</td><td class="px-3 py-2 text-right">9.76</td></tr>
+              <tr><td class="px-3 py-2">Medium</td><td class="px-3 py-2">Phishing</td><td class="px-3 py-2 text-right">4</td><td class="px-3 py-2 text-right">9.76</td></tr>
+              <tr><td class="px-3 py-2">High</td><td class="px-3 py-2">Phishing</td><td class="px-3 py-2 text-right">3</td><td class="px-3 py-2 text-right">7.32</td></tr>
+              <tr><td class="px-3 py-2">High</td><td class="px-3 py-2">Malware</td><td class="px-3 py-2 text-right">1</td><td class="px-3 py-2 text-right">2.44</td></tr>
+              <tr><td class="px-3 py-2">Low</td><td class="px-3 py-2">DDoS</td><td class="px-3 py-2 text-right">1</td><td class="px-3 py-2 text-right">2.44</td></tr>
+              <tr><td class="px-3 py-2">Low</td><td class="px-3 py-2">Ransomware</td><td class="px-3 py-2 text-right">1</td><td class="px-3 py-2 text-right">2.44</td></tr>
+              <tr><td class="px-3 py-2">Medium</td><td class="px-3 py-2">Ransomware</td><td class="px-3 py-2 text-right">1</td><td class="px-3 py-2 text-right">2.44</td></tr>
+            </tbody>
+          </table>
+        </div>
     </article>
 
-    <!-- PARTE 2: CIFRARIO DI CESARE -->
+    <!-- PART 2: CAESAR -->
     <article id="cesare" class="bg-white rounded-lg shadow p-6 mt-10">
-      <h2 class="text-2xl font-semibold">Parte 2 — Distribuzione delle Lettere e Cifrario di Cesare</h2>
+      <h2 class="text-2xl font-semibold">Part 2 — Letter Distribution & Caesar Cipher (offline)</h2>
 
       <p class="text-gray-700 mt-2">
-        Il <strong>cifrario di Cesare</strong> è uno dei più semplici sistemi di crittografia: ogni lettera del testo
-        viene spostata di un numero fisso di posizioni nell’alfabeto. Ad esempio, con uno <em>shift</em> di 3,
-        la lettera “A” diventa “D”, “B” diventa “E” e così via.
+        In the <strong>Caesar cipher</strong>, each letter is shifted by a fixed <em>offset</em>. If the shift is unknown,
+        it can be estimated through the <strong>letter frequency distribution</strong>: the most frequent letter in the ciphertext
+        usually corresponds to the most frequent letter in the plaintext (or to a known <em>count match</em>).
       </p>
 
-      <h3 class="text-xl font-semibold mt-6">Obiettivo dell’esperimento</h3>
-      <p class="text-gray-700">
-        Dimostrare come, anche senza conoscere lo shift usato per cifrare, sia possibile
-        recuperare il testo originale analizzando la <strong>distribuzione delle lettere</strong>.
-        Se una lettera compare molto frequentemente nel testo cifrato,
-        probabilmente corrisponde alla lettera più comune del testo originale.
-      </p>
-
-      <h3 class="text-xl font-semibold mt-6">Esecuzione offline</h3>
-      <div class="bg-gray-50 border rounded p-4 text-sm">
-        <p>
-          Lo script JavaScript (<code>cesare_simple.js</code>) è stato eseguito in locale.
-          Il codice non è incluso nel blog ma disponibile nel repository GitHub:
-        </p>
-        <a class="text-blue-600 hover:underline" href="https://github.com/BaroreSalis/Cryptography/tree/main/cesare" target="_blank">
-          → Apri la cartella /cesare su GitHub
-        </a>
-        <p class="mt-2">
-          Comando d’esempio:
-          <code>node cesare_simple.js --in input.txt --shift 7</code>
-        </p>
+      <div class="bg-gray-50 border rounded p-4 text-sm mt-3">
+        <p class="font-medium">Reproducibility</p>
+        <p>The local script (<code>cesare_simple.js</code>) and generated files are stored in the folder:</p>
+        <a class="text-blue-600 hover:underline" href="https://github.com/BaroreSalis/Cryptography/tree/main/cesare" target="_blank">/cesare</a>
+        <p class="mt-2">Example execution: <code>node cesare_simple.js --in input.txt --shift 7</code></p>
       </div>
 
-      <h3 class="text-xl font-semibold mt-6">Risultati</h3>
-      <p class="text-gray-700">
-        Il testo originale scelto era un articolo introduttivo sulla cybersecurity.
-        Dopo normalizzazione (solo lettere A–Z, accenti rimossi), il testo conteneva
-        <strong>1.973 caratteri</strong>. È stato cifrato con <strong>shift = 7</strong>.
-      </p>
+      <h3 class="text-xl font-semibold mt-6">Summary of Results</h3>
+      <ul class="list-disc pl-6 text-gray-700">
+        <li>Useful characters (A–Z) after normalization: <strong>1,973</strong></li>
+        <li>Encryption shift used: <strong>7</strong></li>
+        <li>Generated files: <code>ciphertext.txt</code>, <code>decrypted.txt</code>, <code>source_freq.csv</code>, <code>cipher_freq.csv</code>, <code>report.md</code></li>
+      </ul>
 
       <div class="mt-4 grid md:grid-cols-2 gap-4">
         <div>
-          <h4 class="font-semibold">Estratto del Ciphertext</h4>
-          <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">
-SHJFILYZLJBYPAFYHWWYLZLUAHZVWYHAABAAVKHSSHCCLUAVKPPUALYULABUVKLPZLAA...
-          </pre>
+          <h4 class="font-semibold">Ciphertext Excerpt</h4>
+          <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">SHJFILYZLJBYPAFYHWWYLZLUAHZVWYHAA...</pre>
+          <a class="text-blue-600 hover:underline text-sm" href="cesare/output/ciphertext.txt">Open ciphertext.txt</a>
         </div>
         <div>
-          <h4 class="font-semibold">Estratto del Plaintext decifrato</h4>
-          <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">
-LACYBERSECURITYRAPPRESENTASOPRATTUTTODALLAVVENTODIINTERNETUNODEISETTOR...
-          </pre>
+          <h4 class="font-semibold">Decrypted Plaintext Excerpt</h4>
+          <pre class="bg-gray-50 border rounded p-3 overflow-x-auto text-sm">LACYBERSECURITYRAPPRESENTASOPRATTU...</pre>
+          <a class="text-blue-600 hover:underline text-sm" href="cesare/output/decrypted.txt">Open decrypted.txt</a>
+        </div>
+      </div>
+
+      <h3 class="text-xl font-semibold mt-6">Letter Distributions</h3>
+      <div class="mt-3 grid md:grid-cols-2 gap-4">
+        <div>
+          <h4 class="font-semibold">Source (original text)</h4>
+          <img src="cesare/output/source_freq.png" alt="Letter distribution - original text" class="rounded shadow" />
+          <a class="text-blue-600 hover:underline text-sm" href="cesare/output/source_freq.csv">Download CSV</a>
+        </div>
+        <div>
+          <h4 class="font-semibold">Ciphertext</h4>
+          <img src="cesare/output/cipher_freq.png" alt="Letter distribution - ciphertext" class="rounded shadow" />
+          <a class="text-blue-600 hover:underline text-sm" href="cesare/output/cipher_freq.csv">Download CSV</a>
         </div>
       </div>
 
       <p class="text-gray-700 mt-4">
-        Analizzando le distribuzioni delle lettere nel ciphertext, si è osservato che
-        una lettera specifica compariva con la stessa frequenza della “E” nel testo in chiaro.
-        Da questa corrispondenza si è dedotto lo <strong>shift usato per cifrare</strong>,
-        confermando così il corretto recupero del plaintext.
+        Simple logic used: if a letter appears <em>N</em> times in the plaintext (e.g. “E” = 32) and there is a letter in the ciphertext
+        with the same count, it is likely the shifted “E”. The shift can be found by the difference between their alphabet indices.
+        When no known counts are available, the most frequent letter in the ciphertext is aligned to a target letter (often “E” in English).
       </p>
 
-      <h3 class="text-xl font-semibold mt-6">Distribuzioni delle lettere</h3>
-      <p class="text-gray-700">
-        Di seguito un frammento dei conteggi delle lettere nel testo originale e in quello cifrato.
-      </p>
-
-      <div class="mt-3 grid md:grid-cols-2 gap-4">
-        <div>
-          <h4 class="font-semibold">Source (input)</h4>
-          <img src="cesare/output/source_freq.png" alt="Distribuzione lettere testo originale" class="rounded shadow" />
-        </div>
-        <div>
-          <h4 class="font-semibold">Ciphertext</h4>
-          <img src="cesare/output/cipher_freq.png" alt="Distribuzione lettere testo cifrato" class="rounded shadow" />
-        </div>
+      <div class="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded p-3 text-sm mt-3">
+        <strong>Note:</strong> in short or non-linguistic texts (many numbers, repeated names) this assumption may fail.
+        In longer texts, frequency analysis works very well.
       </div>
-
-      <p class="text-gray-600 mt-4 italic">
-        Nota: le distribuzioni sono state generate con lo script locale.
-        Le immagini e i file CSV si trovano nella directory <code>output/</code>.
-      </p>
-
-      <h3 class="text-xl font-semibold mt-6">Interpretazione</h3>
-      <p class="text-gray-700">
-        Anche con un metodo semplice, basato solo sulla distribuzione delle lettere,
-        è possibile dedurre con successo lo shift del cifrario di Cesare.
-        L’esperimento dimostra come la statistica — in particolare l’analisi di frequenza —
-        sia alla base di molti attacchi e difese nella crittografia moderna.
-      </p>
     </article>
 
     <footer class="text-center text-gray-500 text-sm mt-12 pb-6">
-      © 2025 • Salvatore Salis • Corso di Metodi Statistici per la Sicurezza
+      © 2025 • Salvatore Salis • Statistic
     </footer>
   </main>
 </body>
