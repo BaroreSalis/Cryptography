@@ -1,0 +1,13 @@
+La cyber security rappresenta, soprattutto dall’avvento di Internet, uno dei settori di maggiore sviluppo dell’informatica.
+Le reti governative, industriali e aziendali da molti anni subiscono ciclicamente attacchi informatici messi a segno da organizzazioni criminali che mirano al sabotaggio o all’estorsione economica: la protezione, dunque, rappresenta un’attività cruciale.
+Nel settore della sicurezza informatica il continuo aggiornamento sulle principali minacce e sulle soluzioni che consentono di mitigarne il rischio rimane una delle migliori armi di difesa.
+Che cosa si intende per Cyber Security?
+La Cyber security rappresenta le procedure e le pratiche messe in atto per proteggere sistemi informatici, reti e programmi da attacchi digitali.
+Gli attacchi informatici consistono in intrusioni in un sistema informatico, rete o programma con lo scopo di prelevare, modificare o distruggere dati, estorcere informazioni in maniera fraudolenta o interrompere un servizio pubblico o aziendale.
+La sicurezza informatica o cyber security è la disciplina che serve a implementare sistemi di sicurezza su sistemi informatici, rete e programmi con l’obiettivo di impedire accessi non autorizzati e evitare che intrusi possano causare danni come il furto di dati.
+Perché le notizie sulla cybersecurity sono importanti per le aziende?
+Nella sezione notizie di Cybersecurity360 monitoriamo costantemente tutte le informazioni che riguardano gli attacchi ai sistemi di sicurezza pubblici e privati.
+La sicurezza informatica è al centro delle necessità delle aziende e della Pubblica Amministrazione che oramai dispongono di moltissime informazioni contenenti dati sensibili che spesso sono oggetto delle attenzioni di malintenzionati.
+La strategia di sicurezza informatica è in continua evoluzione e richiede un costante aggiornamento per rispondere in maniera efficace alle minacce alla sicurezza informatica in ambito business e PA.
+Sia le aziende sia la Pubblica amministrazione stanno adottando metodi sempre più efficaci per difendersi dagli attacchi informatici e violazione dei dati o data breach rivolgendosi ai servizi cloud che consentono di archiviare i dati.
+Sebbene l’archiviazione in cloud sia una delle soluzioni più economicamente convenienti e anche abbastanza sicure, richiede però manutenzione e anche protezione.
