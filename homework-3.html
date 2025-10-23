@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Letter-based RSA & Frequency Analysis — Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- COMMON STYLE -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    /* Base */
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+
+    /* Nav */
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+
+    /* Layout */
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width: 1024px){
+      .grid2{grid-template-columns: 2fr 0.9fr; align-items:start}
+      .aside{position:sticky;top:76px}
+    }
+
+    /* Cards & elements */
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    .card + .card{margin-top:1.1rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    pre{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:.9rem;overflow:auto;font-size:.92rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;padding:.08rem .35rem;border-radius:6px}
+    figure{margin-top:.75rem}
+    img.figure{width:100%;border-radius:10px;border:1px solid #e5e7eb;display:block}
+    figcaption{text-align:center;color:#64748b;font-size:.85rem;margin-top:.35rem}
+
+    /* Sidebar widgets */
+    .widget h3{font-weight:700;margin-bottom:.25rem}
+    .pill{display:inline-block;background:#eef2ff;border:1px solid #e0e7ff;color:#3730a3;padding:.12rem .5rem;border-radius:999px;font-size:.8rem}
+    .meta-list{font-size:.95rem;color:#475569}
+    .meta-list li{display:flex;justify-content:space-between;border-top:1px dashed #e5e7eb;padding:.4rem 0}
+    .meta-list li:first-child{border-top:none}
+    .toc li{margin:.25rem 0}
+
+    /* Section separation feel */
+    .section-gap{margin-bottom:.35rem}
+    .spacer{height:.5rem}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div class="flex items-baseline justify-between">
+        <a class="brand text-xl" href="index.html">Statistics & Cybersecurity</a>
+        <span class="text-sm text-gray-500">—</span>
+      </div>
+    </div>
+    <nav class="sub">
+      <div class="wrap inner">
+        <a href="index.html">Home</a>
+        <a href="statistic-in-cyber-security.html">Statistics in Cybersecurity</a>
+        <a href="distribuzioni-cyber.html">Distributions & Caesar</a>
+        <a href="homework-3.html">Letter-based RSA</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid2">
+      <!-- ===== MAIN CONTENT (left) ===== -->
+      <div>
+        <!-- Introduction -->
+        <article id="intro" class="card section-gap">
+          <h2>1) Introduction</h2>
+          <p>
+            This experiment shows that applying <strong>RSA</strong> to <em>single letters</em> (without padding or block processing) effectively creates a
+            <strong>deterministic monoalphabetic substitution</strong>.
+            The frequency profile of the letters is not randomized but merely relabeled, so an attacker can exploit <em>recurring patterns</em> to estimate the original plaintext.
+          </p>
+          <div class="note">
+            Key idea: <strong>statistics still leak through</strong> when probabilistic padding (e.g. OAEP) or hybrid encryption schemes (RSA + AES) are not used.
+          </div>
+        </article>
+
+        <!-- RSA basics -->
+        <article id="rsa" class="card section-gap">
+          <h2>2) RSA — basic mechanism</h2>
+          <p>
+            Two prime numbers <code>p</code> and <code>q</code> are chosen, giving <code>n = p·q</code> and <code>φ = (p−1)(q−1)</code>.
+            A public exponent <code>e</code> is selected such that <code>gcd(e, φ)=1</code>, and the private key <code>d</code> is calculated so that
+            <code>d ≡ e⁻¹ (mod φ)</code>.
+          </p>
+          <p>
+            If each letter is represented as a number <code>m ∈ {0, …, 25}</code>, encryption becomes <code>c ≡ mᵉ mod n</code>
+            and decryption <code>m ≡ cᵈ mod n</code>.
+          </p>
+          <p class="muted">
+            When applied <em>letter by letter</em> and mapped to 26 fixed symbols, RSA behaves as a 1:1 permutation of <code>A–Z</code> that preserves frequencies.
+          </p>
+        </article>
+
+        <!-- Experimental model -->
+        <article id="modello" class="card section-gap">
+          <h2>3) Experimental model</h2>
+          <h3>Procedure</h3>
+          <ul>
+            <li>Normalize the text to uppercase <code>A–Z</code> (removing accents and symbols).</li>
+            <li>Encrypt each letter with <code>c = m^e mod n</code> using <code>p = 13</code>, <code>q = 11</code>, <code>e = 7</code> → 26 unique residues.</li>
+            <li>Map the residues consistently to <code>A–Z</code> → deterministic substitution.</li>
+            <li>Compare frequency distributions of the plaintext and ciphertext.</li>
+          </ul>
+          <div class="note">
+            Small parameters were intentionally chosen to ensure a 1:1 mapping. This helps to visually show that the frequency distribution survives letter-based encryption.
+          </div>
+        </article>
+
+        <!-- Plots -->
+        <article id="plot" class="card section-gap">
+          <h2>4) Frequency distributions (plots)</h2>
+          <p class="muted">
+            Charts are generated from the CSV files: <code>source_freq.csv</code>, <code>cipher_freq.csv</code>, and <code>guess_freq.csv</code>
+            stored in <code>rsa/output/</code>.
+          </p>
+
+          <figure>
+            <img class="figure" src="rsa/output/source_freq.png" alt="Plaintext letter distribution" />
+            <figcaption>Plaintext — normalized letter frequency (A–Z).</figcaption>
+          </figure>
+
+          <figure>
+            <img class="figure" src="rsa/output/cipher_freq.png" alt="Ciphertext letter distribution" />
+            <figcaption>Ciphertext — same shape as the plaintext, only relabeled.</figcaption>
+          </figure>
+
+          <figure>
+            <img class="figure" src="rsa/output/guess_freq.png" alt="Estimated distribution (frequency analysis)" />
+            <figcaption>Estimated plaintext from frequency analysis.</figcaption>
+          </figure>
+        </article>
+
+        <!-- Attack -->
+        <article id="attacco" class="card section-gap">
+          <h2>5) Frequency attack (based on plaintext data)</h2>
+          <p>
+            In this experiment, the attack <strong>does not rely on generic language averages</strong>.
+            Instead, the plaintext letter ranking is obtained <em>before</em> encryption and used as a guide.
+            The ciphertext letters are ordered by frequency and aligned to the plaintext letters ranked by their original frequency (rank-to-rank matching).
+            The result is an approximate reconstruction of the original text.
+          </p>
+          <div class="note">
+            Didactic assumption: the attacker already knows or can estimate the source text distribution (for example, from the same language domain).
+            This demonstrates how preserved frequencies make such an attack possible.
+          </div>
+          <h3>Example (extract)</h3>
+          <pre>Cipher:
+ZQHBTPMA...
+
+Guess (based on plaintext ranks):
+LACYB?RSEC...</pre>
+          <p class="muted">Accuracy depends on sample size. The measured value is reported in <code>report.txt</code>.</p>
+        </article>
+
+        <!-- Statistics & Security -->
+        <article id="stat" class="card section-gap">
+          <h2>6) Why statistics matter in cybersecurity</h2>
+          <p>
+            If the encryption system is deterministic and operates on small units (letters),
+            <strong>patterns and repetitions</strong> can still leak through.
+            With larger samples, the statistical estimation becomes more accurate (law of large numbers).
+            Using probabilistic padding such as <strong>OAEP</strong> breaks the deterministic link between plaintext and ciphertext,
+            effectively hiding frequency information.
+          </p>
+        </article>
+
+        <!-- Reproducibility -->
+        <article id="replica" class="card section-gap">
+          <h2>7) Reproducibility (tools and commands)</h2>
+          <p class="muted">The Node.js script generates the text and CSV data; a short Python script produces the plots.</p>
+          <h3>Example Node command</h3>
+          <pre>node rsa_freq.js --in rsa/output/input.txt --p 13 --q 11 --e 7</pre>
+
+          <h3>Python plotting script (save as <code>rsa/output/make_plots.py</code>)</h3>
+          <pre>#!/usr/bin/env python3
+import pandas as pd
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+OUT = Path("rsa/output")
+JOBS = [
+    ("source_freq.csv", "source_freq.png", "Plaintext — frequencies"),
+    ("cipher_freq.csv", "cipher_freq.png", "Ciphertext — frequencies"),
+    ("guess_freq.csv",  "guess_freq.png",  "Estimated — frequencies"),
+]
+
+def plot(csv_name, png_name, title):
+    p = OUT / csv_name
+    if not p.exists():
+        print(f"[skip] {csv_name} not found")
+        return
+    df = pd.read_csv(p)
+    letters = df["letter"].tolist()
+    freqs = df["freq"].tolist()
+
+    plt.figure(figsize=(10, 4.2))
+    plt.bar(letters, freqs)
+    plt.title(title)
+    plt.xlabel("Letter")
+    plt.ylabel("Frequency")
+    plt.tight_layout()
+    plt.savefig(OUT / png_name, dpi=160)
+    plt.close()
+
+if __name__ == "__main__":
+    OUT.mkdir(parents=True, exist_ok=True)
+    for csv_name, png_name, title in JOBS:
+        plot(csv_name, png_name, title)
+    print("Plots saved in rsa/output/")</pre>
+
+          <p class="muted">Run locally with <code>pip install pandas matplotlib</code> and then <code>python rsa/output/make_plots.py</code>.</p>
+        </article>
+
+        <!-- Files -->
+        <article id="files" class="card section-gap">
+          <h2>8) Output files</h2>
+          <ul>
+            <li><a href="rsa/output/normalized_plain.txt">normalized_plain.txt</a></li>
+            <li><a href="rsa/output/ciphertext.txt">ciphertext.txt</a></li>
+            <li><a href="rsa/output/decrypted.txt">decrypted.txt</a></li>
+            <li><a href="rsa/output/attack_guess_from_source.txt">attack_guess_from_source.txt</a></li>
+            <li><a href="rsa/output/mapping.txt">mapping.txt</a></li>
+            <li><a href="rsa/output/source_freq.csv">source_freq.csv</a></li>
+            <li><a href="rsa/output/cipher_freq.csv">cipher_freq.csv</a></li>
+            <li><a href="rsa/output/guess_freq.csv">guess_freq.csv</a></li>
+            <li><a href="rsa/output/report.txt">report.txt</a></li>
+          </ul>
+        </article>
+
+        <!-- NEW SECTION: Code -->
+        <article id="code" class="card section-gap">
+          <h2>9) Source code</h2>
+          <p>
+            The full JavaScript code used to generate the ciphertext, and frequency tables is available on my GitHub repository.
+            The script implements letter-based RSA encryption and exports all relevant files in the <code>rsa/output</code> directory.
+          </p>
+          <p class="muted">Click below to view or download the source:</p>
+          <p style="margin-top:.5rem;">
+            <a href="https://github.com/BaroreSalis/Cryptography/blob/main/rsa.js" target="_blank" class="btn">
+              View rsa.js on GitHub
+            </a>
+          </p>
+        </article>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="aside">
+        <div class="card widget">
+          <h3>Quick info</h3>
+          <p class="muted" style="margin-top:.25rem">Overview of this demo experiment.</p>
+          <div class="spacer"></div>
+          <ul class="meta-list">
+            <li><span>Method</span><span>Letter-based RSA</span></li>
+            <li><span>Attack</span><span>Frequency (rank)</span></li>
+            <li><span>Padding</span><span class="pill">None (didactic)</span></li>
+            <li><span>Output</span><span>CSV + PNG</span></li>
+          </ul>
+        </div>
+
+        <div class="card widget" style="margin-top:1rem;">
+          <h3>Quick index</h3>
+          <ul class="toc">
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#rsa">RSA basics</a></li>
+            <li><a href="#modello">Experimental model</a></li>
+            <li><a href="#plot">Frequency plots</a></li>
+            <li><a href="#attacco">Frequency attack</a></li>
+            <li><a href="#stat">Statistics</a></li>
+            <li><a href="#replica">Reproducibility</a></li>
+            <li><a href="#files">Files</a></li>
+            <li><a href="#code">Source code</a></li>
+          </ul>
+        </div>
+
+        <div class="card widget" style="margin-top:1rem;">
+          <h3>Parameters used</h3>
+          <ul class="meta-list">
+            <li><span>p</span><span>13</span></li>
+            <li><span>q</span><span>11</span></li>
+            <li><span>e</span><span>7</span></li>
+            <li><span>Mapping</span><span>1:1 A–Z</span></li>
+          </ul>
+          <p class="muted" style="margin-top:.5rem">Input file: <code>rsa/input.txt</code></p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="mt-6">
+      <a href="index.html" class="text-blue-600 hover:underline">← Back to Home</a>
+    </div>
+
+    <footer>© 2025 · Salvatore Salis — Statistic</footer>
+  </main>
+</body>
+</html>

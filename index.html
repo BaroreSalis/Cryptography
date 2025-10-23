@@ -2,22 +2,44 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <title>Home – Il Mio Blog</title>
+  <title>Home — Statistiche & Cybersecurity</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Ultimi articoli del blog." />
+  <!-- STILE COMUNE -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1000px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb;border-top:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+    main{padding:24px 0 48px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:1.25rem;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
 </head>
-<body class="bg-gray-50">
-  <header class="px-6 py-4 bg-white border-b">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <a href="index.html" class="text-xl font-bold hover:underline">Il Mio Blog</a>
-      <nav class="text-sm text-gray-600 space-x-4">
-        <a href="index.html" class="hover:underline">Home</a>
-      </nav>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div class="flex items-baseline justify-between">
+        <a class="brand text-xl" href="index.html">Statistiche & Cybersecurity</a>
+        <span class="text-sm text-gray-500">Salvatore Salis</span>
+      </div>
     </div>
+    <nav class="sub">
+      <div class="wrap inner">
+        <a href="index.html">Home</a>
+        <a href="statistic-in-cyber-security.html">Perché le statistiche contano</a>
+        <a href="distribuzioni-cyber.html">Distribuzioni & Cesare</a>
+        <a href="homework-3.html">RSA per-lettera</a>
+      </div>
+    </nav>
   </header>
 
-  <main class="max-w-6xl mx-auto px-6 py-8">
+  <main class="wrap">
     <h1 class="text-2xl font-semibold mb-6">Ultimi articoli</h1>
 
     <ul class="space-y-4">
@@ -40,7 +62,18 @@
           Subject: Cyber Security • Published: 14/10/2025 12:00
         </div>
       </li>
+
+      <li>
+        <a class="text-blue-600 hover:underline text-lg"
+           href="homework-3.html">
+           RSA Attack - Distribuition in Cyber Security
+        </a>
+        <div class="text-sm text-gray-500">
+          Subject: Cyber Security • Published: 22/10/2025 12:00
+        </div>
+      </li>
     </ul>
+  <footer>© 2025 · Salvatore Salis</footer>
   </main>
 </body>
 </html>

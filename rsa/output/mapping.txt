@@ -1,0 +1,27 @@
+Plain,Num(m^e mod n),Symbol
+A,0,A
+B,1,B
+C,128,W
+D,42,J
+E,82,Q
+F,47,L
+G,85,R
+H,6,D
+I,57,O
+J,48,M
+K,10,E
+L,132,X
+M,12,F
+N,117,V
+O,53,N
+P,115,U
+Q,3,C
+R,30,I
+S,138,Z
+T,46,K
+U,136,Y
+V,109,T
+W,22,G
+X,23,H
+Y,106,S
+Z,64,P
