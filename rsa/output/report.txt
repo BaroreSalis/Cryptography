@@ -1,6 +1,0 @@
-=== RSA per-lettera — report (attacco basato su ricorrenza del plaintext) ===
-Input normalizzato (len): 1973
-Parametri: p=13, q=11, n=143, φ=120, e=7, d=103
-Residui distinti m^e mod n: 26 (richiesti: 26)
-Accuratezza stima (rank matching): 97.57%
-File: normalized_plain.txt, ciphertext.txt, decrypted.txt, attack_guess_from_source.txt, mapping.txt, *.csv

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Law of Large Numbers — Theory & Applications</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- COMMON STYLE -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    /* Base */
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+
+    /* Nav */
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+
+    /* Layout */
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width: 1024px){
+      .grid2{grid-template-columns: 2fr 0.9fr; align-items:start}
+      .aside{position:sticky;top:76px}
+    }
+
+    /* Cards & elements */
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    .card + .card{margin-top:1.1rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    pre{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:.9rem;overflow:auto;font-size:.92rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;padding:.08rem .35rem;border-radius:6px}
+    figure{margin-top:.75rem}
+    img.figure{width:100%;border-radius:10px;border:1px solid #e5e7eb;display:block}
+    figcaption{text-align:center;color:#64748b;font-size:.85rem;margin-top:.35rem}
+
+    /* Sidebar widgets */
+    .widget h3{font-weight:700;margin-bottom:.25rem}
+    .pill{display:inline-block;background:#eef2ff;border:1px solid #e0e7ff;color:#3730a3;padding:.12rem .5rem;border-radius:999px;font-size:.8rem}
+    .meta-list{font-size:.95rem;color:#475569}
+    .meta-list li{display:flex;justify-content:space-between;border-top:1px dashed #e5e7eb;padding:.4rem 0}
+    .meta-list li:first-child{border-top:none}
+    .toc li{margin:.25rem 0}
+
+    /* Section separation feel */
+    .section-gap{margin-bottom:.35rem}
+    .spacer{height:.5rem}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div class="flex items-baseline justify-between">
+        <a class="brand text-xl" href="index.html">Statistics & Cybersecurity</a>
+        <span class="text-sm text-gray-500">—</span>
+      </div>
+    </div>
+    <nav class="sub">
+      <div class="wrap inner">
+        <a href="index.html">Home</a>
+        <a href="statistic-in-cyber-security.html">Statistics in Cybersecurity</a>
+        <a href="distribuzioni-cyber.html">Distributions & Caesar</a>
+        <a href="homework-3.html">Letter-based RSA</a>
+        <a href="lln.html" class="font-semibold">Law of Large Numbers</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="grid2">
+      <!-- ===== MAIN CONTENT (left) ===== -->
+      <div>
+        <!-- Title & Intro -->
+        <article id="intro" class="card section-gap">
+          <h2>📘 The Law of Large Numbers (LLN) — Theoretical and Practical Analysis</h2>
+          <p>
+            The <strong>Law of Large Numbers (LLN)</strong> is a cornerstone of probability and statistics. In simple terms: when a random
+            experiment is repeated many times, the <em>relative frequency</em> of an event tends to stabilize around its <em>true probability</em>.
+          </p>
+          <div class="note">
+            Key message: <strong>with more data, randomness averages out</strong>. Frequencies become stable and approach the true probability.
+          </div>
+        </article>
+
+        <!-- Section 1: Definition + Example -->
+        <article id="definition" class="card section-gap">
+          <h2>1) What the Law of Large Numbers Is</h2>
+          <p>
+            Consider a fair coin with probability <code>p = 0.5</code> for heads. If you toss it <code>10</code> times,
+            you may observe <code>7</code> heads (<code>f = 0.7</code>). With <code>1,000</code> tosses, the frequency is typically close to <code>0.5</code>.
+            With <code>1,000,000</code> tosses, it will be even closer.
+          </p>
+          <p>
+            Formally, if <code>f_n = successes / n</code> is the relative frequency after <code>n</code> trials, then
+            <code>lim (n → ∞) f_n = p</code>.
+          </p>
+        </article>
+
+        <!-- Section 2: Visualization -->
+        <article id="visualization" class="card section-gap">
+          <h2>2) Visualizing the LLN with Multiple Trajectories</h2>
+          <p>
+            In a typical simulation, we generate <code>m</code> independent trajectories. Each trajectory consists of <code>n</code>
+            Bernoulli trials (success/failure). For trajectory <code>i</code> and step <code>k</code>, the cumulative relative frequency is
+            <code>f_i(k) = (successes in the first k trials of trajectory i) / k</code>.
+          </p>
+          <h3>What the plot shows</h3>
+          <ul>
+            <li>At the beginning (small <code>k</code>) the values fluctuate strongly — frequencies are unstable.</li>
+            <li>As <code>k</code> grows, all trajectories move closer to <code>p</code>.</li>
+            <li>The “fan” of dispersion shrinks with more trials.</li>
+            <li>The final histogram (right side) concentrates around <code>p</code>.</li>
+          </ul>
+          <figure>
+            <img class="figure" src="lln/output/trajectories.png" alt="Trajectories of cumulative relative frequencies" />
+            <figcaption>Multiple trajectories converge toward the horizontal line <code>y = p</code> as trials increase.</figcaption>
+          </figure>
+          <figure>
+            <img class="figure" src="lln/output/final_histogram.png" alt="Final histogram of frequencies" />
+            <figcaption>Final distribution of relative frequencies becomes narrow and centered near <code>p</code>.</figcaption>
+          </figure>
+          <p class="muted">(You can replace the image paths above once your plots are available.)</p>
+        </article>
+
+        <!-- Section 3: Link with Statistics -->
+        <article id="statistics" class="card section-gap">
+          <h2>3) Connection with Statistics</h2>
+          <p>
+            The LLN is the conceptual basis of <strong>inferential statistics</strong>. It guarantees that sample-based estimates become
+            more reliable with larger samples. In particular, the sample mean converges to the population mean:
+          </p>
+          <pre>\bar{X}_n = (1/n) * \sum_{i=1}^n X_i  →  E[X]  (as n increases)</pre>
+          <p class="muted">This is why larger datasets lead to stable estimates.</p>
+        </article>
+
+        <!-- Section 4: Cybersecurity Applications -->
+        <article id="cybersecurity" class="card section-gap">
+          <h2>4) Applications in Cybersecurity</h2>
+
+          <h3>a) Traffic Monitoring and Anomaly Detection</h3>
+          <p>
+            In networks, firewalls, and log systems, “normal” events show typical frequencies. Over time, empirical frequencies stabilize.
+            If a frequency shifts significantly, it can indicate an attack or anomaly. Intrusion Detection Systems (IDS) exploit this idea.
+          </p>
+
+          <h3>b) Frequency Analysis in Cryptography</h3>
+          <p>
+            In monoalphabetic frequency attacks, longer ciphertexts reveal letter frequencies that approach their true linguistic values
+            (e.g., in English, <code>E ≈ 12%</code>, <code>T ≈ 9%</code>). The LLN makes these statistical attacks feasible.
+          </p>
+
+          <h3>c) Risk Analysis and Monte Carlo</h3>
+          <p>
+            Monte Carlo simulations repeat random experiments many times. Thanks to the LLN, empirical averages converge to expected values,
+            providing credible risk estimates.
+          </p>
+
+          <h3>d) Random Number Generators</h3>
+          <p>
+            Cryptographic systems require strong randomness. PRNGs are tested so that the long-run frequencies of bits and patterns obey the LLN.
+            If they do not, the generator is not truly random and may be vulnerable.
+          </p>
+        </article>
+
+        <!-- Section 5: Statistical Interpretation -->
+        <article id="interpretation" class="card section-gap">
+          <h2>5) Statistical Interpretation of the Plot</h2>
+          <p>
+            Each trajectory is one sequence of empirical frequencies. Together, they show high variability on the left and stronger concentration on the right.
+            For a fixed number of trials <code>n</code>, the final histogram of <code>f(n)</code> has
+            <code>mean ≈ p</code> and <code>variance ≈ p(1 − p)/n</code>. As <code>n</code> increases, the variance tends to zero.
+          </p>
+          <div class="note">
+            Normal approximation: for large <code>n</code>, <code>f(n) ~ N(p, p(1 − p)/n)</code> — that is, approximately normal around <code>p</code> with shrinking variance.
+          </div>
+        </article>
+
+        <!-- Reproducibility / Code link placeholder -->
+        <article id="repro" class="card section-gap">
+          <h2>6) Reproducibility (plots and code)</h2>
+          <p class="muted">Below you can link the script that generates the trajectories and the histogram.</p>
+          <p style="margin-top:.5rem;">
+            <a href="https://github.com/BaroreSalis/Cryptography/blob/main/lln/make_plot_lln.py" target="_blank" class="text-blue-600 hover:underline">View the plotting code (to be added)</a>
+          </p>
+        </article>
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="aside">
+        <div class="card widget">
+          <h3>Quick info</h3>
+          <p class="muted" style="margin-top:.25rem">Overview of LLN and its cybersecurity links.</p>
+          <div class="spacer"></div>
+          <ul class="meta-list">
+            <li><span>Topic</span><span>Law of Large Numbers</span></li>
+            <li><span>Type</span><span>Theory + Simulation</span></li>
+            <li><span>Focus</span><span class="pill">Convergence of frequencies</span></li>
+            <li><span>Output</span><span>Plots + Code</span></li>
+          </ul>
+        </div>
+
+        <div class="card widget" style="margin-top:1rem;">
+          <h3>Quick index</h3>
+          <ul class="toc">
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#definition">Definition & Example</a></li>
+            <li><a href="#visualization">Visualization</a></li>
+            <li><a href="#statistics">Statistics Link</a></li>
+            <li><a href="#cybersecurity">Cybersecurity</a></li>
+            <li><a href="#interpretation">Interpretation</a></li>
+            <li><a href="#repro">Reproducibility</a></li>
+          </ul>
+        </div>
+
+        <div class="card widget" style="margin-top:1rem;">
+          <h3>Parameters (example)</h3>
+          <ul class="meta-list">
+            <li><span>p</span><span>0.5 (coin)</span></li>
+            <li><span>m</span><span>50 trajectories</span></li>
+            <li><span>n</span><span>10,000 trials</span></li>
+            <li><span>Plots</span><span>Trajectories + Histogram</span></li>
+          </ul>
+          <p class="muted" style="margin-top:.5rem">You can update these to match your run.</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="mt-6">
+      <a href="index.html" class="text-blue-600 hover:underline">← Back to Home</a>
+    </div>
+
+    <footer>© 2025 · Salvatore Salis — Statistic</footer>
+  </main>
+</body>
+</html>
