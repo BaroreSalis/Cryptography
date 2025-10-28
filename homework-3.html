@@ -95,33 +95,41 @@
 
         <!-- RSA basics -->
         <article id="rsa" class="card section-gap">
-          <h2>2) RSA — basic mechanism</h2>
+          <h2>2) RSA — basic mechanism (updated)</h2>
           <p>
             Two prime numbers <code>p</code> and <code>q</code> are chosen, giving <code>n = p·q</code> and <code>φ = (p−1)(q−1)</code>.
-            A public exponent <code>e</code> is selected such that <code>gcd(e, φ)=1</code>, and the private key <code>d</code> is calculated so that
+            A public exponent <code>e</code> is selected so that <code>gcd(e, φ)=1</code>, and the private exponent <code>d</code> is computed with
             <code>d ≡ e⁻¹ (mod φ)</code>.
           </p>
           <p>
-            If each letter is represented as a number <code>m ∈ {0, …, 25}</code>, encryption becomes <code>c ≡ mᵉ mod n</code>
-            and decryption <code>m ≡ cᵈ mod n</code>.
+            In the updated script each character of the <strong>normalized alphabet</strong> is mapped to an integer:
+            <code>A→0, B→1, …, Z→25, (space)→26</code>.
+            Encryption is performed per-letter as <code>c ≡ mᵉ mod n</code> and decryption as <code>m ≡ cᵈ mod n</code>.
           </p>
           <p class="muted">
-            When applied <em>letter by letter</em> and mapped to 26 fixed symbols, RSA behaves as a 1:1 permutation of <code>A–Z</code> that preserves frequencies.
+            Because we encrypt single characters deterministically and map residues to a fixed alphabet (now 27 symbols — A–Z plus space),
+            RSA acts as a fixed 1:1 permutation of the alphabet: frequencies are preserved and only relabeled.
+          </p>
+          <p class="muted">
+            Default parameters used by the updated script: <code>p = 101</code>, <code>q = 113</code>, <code>e = 17</code>. The script writes both the RSA-decrypted text (with the private key)
+            and the attacker guess obtained through frequency analysis / hill-climbing to the <code>output/</code> folder.
           </p>
         </article>
 
         <!-- Experimental model -->
         <article id="modello" class="card section-gap">
-          <h2>3) Experimental model</h2>
+          <h2>3) Experimental model (updated)</h2>
           <h3>Procedure</h3>
           <ul>
-            <li>Normalize the text to uppercase <code>A–Z</code> (removing accents and symbols).</li>
-            <li>Encrypt each letter with <code>c = m^e mod n</code> using <code>p = 13</code>, <code>q = 11</code>, <code>e = 7</code> → 26 unique residues.</li>
-            <li>Map the residues consistently to <code>A–Z</code> → deterministic substitution.</li>
-            <li>Compare frequency distributions of the plaintext and ciphertext.</li>
+            <li>Normalize the input text to uppercase and collapse repeated spaces: allowed symbols are <code>A–Z</code> and <code>space</code>.</li>
+            <li>Represent each character as an integer in <code>{0..26}</code> where <code>26</code> is the space character.</li>
+            <li>Encrypt every character independently using RSA: <code>c = m^e mod n</code> with small didactic primes (defaults shown above).</li>
+            <li>The ciphertext is an array of integer residues; because the exponentiation is deterministic, there is a 1:1 mapping (permutation) between alphabet symbols and residues.</li>
+            <li>We build frequency tables from the plaintext and from the ciphertext and attempt to align them to recover the plaintext (frequency ranking + hill-climb using a bigram model).</li>
           </ul>
           <div class="note">
-            Small parameters were intentionally chosen to ensure a 1:1 mapping. This helps to visually show that the frequency distribution survives letter-based encryption.
+            The script intentionally keeps parameters small and simple to make the 1:1 nature of the mapping visually and numerically obvious.
+            The output files are written to <code>rsa/output/</code> (see section «Files»).
           </div>
         </article>
 
@@ -135,40 +143,44 @@
 
           <figure>
             <img class="figure" src="rsa/output/source_freq.png" alt="Plaintext letter distribution" />
-            <figcaption>Plaintext — normalized letter frequency (A–Z).</figcaption>
-          </figure>
-
-          <figure>
-            <img class="figure" src="rsa/output/cipher_freq.png" alt="Ciphertext letter distribution" />
-            <figcaption>Ciphertext — same shape as the plaintext, only relabeled.</figcaption>
+            <figcaption>Plaintext — normalized letter frequency (A–Z and space).</figcaption>
           </figure>
 
           <figure>
             <img class="figure" src="rsa/output/guess_freq.png" alt="Estimated distribution (frequency analysis)" />
-            <figcaption>Estimated plaintext from frequency analysis.</figcaption>
+            <figcaption>Estimated plaintext from frequency analysis (after rank-matching and hill-climb refinement).</figcaption>
           </figure>
         </article>
 
         <!-- Attack -->
         <article id="attacco" class="card section-gap">
-          <h2>5) Frequency attack (based on plaintext data)</h2>
+          <h2>5) Frequency attack (updated)</h2>
           <p>
-            In this experiment, the attack <strong>does not rely on generic language averages</strong>.
-            Instead, the plaintext letter ranking is obtained <em>before</em> encryption and used as a guide.
-            The ciphertext letters are ordered by frequency and aligned to the plaintext letters ranked by their original frequency (rank-to-rank matching).
-            The result is an approximate reconstruction of the original text.
+            The updated attack proceeds in two phases:
+          </p>
+          <ol>
+            <li><strong>Frequency mapping:</strong> count how many times each ciphertext residue appears, and align residues (most frequent → most frequent) with the plaintext letter ranking obtained from the source sample. In this didactic version the attacker is allowed to use the plaintext frequency ranking as a guiding prior (this demonstrates the vulnerability when frequency information is preserved).</li>
+            <li><strong>Hill-climbing refinement:</strong> the initial mapping is refined using a simple bigram language model built from the same plaintext sample. The algorithm tries pairwise swaps of mapping assignments and keeps swaps that improve the bigram log-score.</li>
+          </ol>
+          <p class="muted">
+            The script writes the attack guess in <code>attack_guess_from_source.txt</code>. For comparison, the exact decryption with the private key is written to <code>decrypted.txt</code>.
           </p>
           <div class="note">
-            Didactic assumption: the attacker already knows or can estimate the source text distribution (for example, from the same language domain).
-            This demonstrates how preserved frequencies make such an attack possible.
+            Educational remark: in a realistic attack the attacker would use a general language model (e.g., trained on large corpora) rather than the exact plaintext frequencies;
+            here we keep the demonstration controlled so the effect of preserved frequency is explicit.
           </div>
-          <h3>Example (extract)</h3>
-          <pre>Cipher:
-ZQHBTPMA...
 
-Guess (based on plaintext ranks):
-LACYB?RSEC...</pre>
-          <p class="muted">Accuracy depends on sample size. The measured value is reported in <code>report.txt</code>.</p>
+          <h3>Example (extract)</h3>
+          <pre>Cipher (numeric residues):
+4621  893  4621  ...
+
+Attack guess (rank + hill-climb):
+THIS IS AN EXAMPLE ...
+
+Private-key decryption (ground truth):
+THIS IS AN EXAMPLE ...
+</pre>
+          <p class="muted">Files with the actual data are in <code>rsa/output/</code> after running the script.</p>
         </article>
 
         <!-- Statistics & Security -->
@@ -186,9 +198,18 @@ LACYB?RSEC...</pre>
         <!-- Reproducibility -->
         <article id="replica" class="card section-gap">
           <h2>7) Reproducibility (tools and commands)</h2>
-          <p class="muted">The Node.js script generates the text and CSV data; a short Python script produces the plots.</p>
-          <h3>Example Node command</h3>
-          <pre>node rsa_freq.js --in rsa/output/input.txt --p 13 --q 11 --e 7</pre>
+          <p class="muted">The Node.js script generates the ciphertext, frequency CSVs and the decoded results; a small Python script produces the plots.</p>
+          <h3>Example Node command (updated)</h3>
+          <pre>node rsa_attack_with_output.js "Il testo che vuoi testare qui"</pre>
+
+          <p class="muted">This will create (inside the working directory) a folder <code>output/</code> with:</p>
+          <ul>
+            <li><code>ciphertext.txt</code> — the ciphertext residues (space-separated)</li>
+            <li><code>decrypted.txt</code> — decryption using the private key (ground truth)</li>
+            <li><code>attack_guess_from_source.txt</code> — recovered plaintext from the frequency attack + hill-climb</li>
+            <li><code>mapping.txt</code> — final mapping used by the attack (cipherSymbol -> letter)</li>
+            <li><code>source_freq.csv</code>, <code>cipher_freq.csv</code>, <code>guess_freq.csv</code> — frequency tables</li>
+          </ul>
 
           <h3>Python plotting script (save as <code>rsa/output/make_plots.py</code>)</h3>
           <pre>#!/usr/bin/env python3
@@ -196,36 +217,36 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-OUT = Path("rsa/output")
+OUT = Path(\"rsa/output\")
 JOBS = [
-    ("source_freq.csv", "source_freq.png", "Plaintext — frequencies"),
-    ("cipher_freq.csv", "cipher_freq.png", "Ciphertext — frequencies"),
-    ("guess_freq.csv",  "guess_freq.png",  "Estimated — frequencies"),
+    (\"source_freq.csv\", \"source_freq.png\", \"Plaintext — frequencies\"),
+    (\"cipher_freq.csv\", \"cipher_freq.png\", \"Ciphertext — frequencies\"),
+    (\"guess_freq.csv\",  \"guess_freq.png\",  \"Estimated — frequencies\"),
 ]
 
 def plot(csv_name, png_name, title):
     p = OUT / csv_name
     if not p.exists():
-        print(f"[skip] {csv_name} not found")
+        print(f\"[skip] {csv_name} not found\")
         return
     df = pd.read_csv(p)
-    letters = df["letter"].tolist()
-    freqs = df["freq"].tolist()
+    letters = df[\"letter\"].tolist()
+    freqs = df[\"freq\"].tolist()
 
     plt.figure(figsize=(10, 4.2))
     plt.bar(letters, freqs)
     plt.title(title)
-    plt.xlabel("Letter")
-    plt.ylabel("Frequency")
+    plt.xlabel(\"Letter\")
+    plt.ylabel(\"Frequency\")
     plt.tight_layout()
     plt.savefig(OUT / png_name, dpi=160)
     plt.close()
 
-if __name__ == "__main__":
+if __name__ == \"__main__\":
     OUT.mkdir(parents=True, exist_ok=True)
     for csv_name, png_name, title in JOBS:
         plot(csv_name, png_name, title)
-    print("Plots saved in rsa/output/")</pre>
+    print(\"Plots saved in rsa/output/\")</pre>
 
           <p class="muted">Run locally with <code>pip install pandas matplotlib</code> and then <code>python rsa/output/make_plots.py</code>.</p>
         </article>
@@ -247,15 +268,21 @@ if __name__ == "__main__":
 
         <!-- NEW SECTION: Code -->
         <article id="code" class="card section-gap">
-          <h2>9) Source code</h2>
+          <h2>9) Source code (updated)</h2>
           <p>
-            The full JavaScript code used to generate the ciphertext, and frequency tables is available on my GitHub repository.
-            The script implements letter-based RSA encryption and exports all relevant files in the <code>rsa/output</code> directory.
+            The Node.js file used to produce these outputs is <code>rsa_attack_with_output.js</code>. It performs:
           </p>
-          <p class="muted">Click below to view or download the source:</p>
+          <ul>
+            <li>normalization of the input to <code>A–Z + space</code>;</li>
+            <li>per-letter RSA encryption with default small primes (<code>p=101, q=113, e=17</code>);</li>
+            <li>construction of frequency tables and initial rank-based mapping;</li>
+            <li>hill-climbing refinement with a bigram model;</li>
+            <li>export of all requested files into <code>output/</code>.</li>
+          </ul>
+          <p class="muted">Click below to view the script source on GitHub (or replace the link with your repo):</p>
           <p style="margin-top:.5rem;">
-            <a href="https://github.com/BaroreSalis/Cryptography/blob/main/rsa/rsa_attack.js" target="_blank" class="btn">
-              View rsa.js on GitHub
+            <a href="https://github.com/BaroreSalis/Cryptography/blob/main/rsa/rsa_attack_with_output.js" target="_blank" class="btn">
+              View rsa_attack_with_output.js on GitHub
             </a>
           </p>
         </article>
@@ -269,9 +296,9 @@ if __name__ == "__main__":
           <div class="spacer"></div>
           <ul class="meta-list">
             <li><span>Method</span><span>Letter-based RSA</span></li>
-            <li><span>Attack</span><span>Frequency (rank)</span></li>
+            <li><span>Attack</span><span>Frequency (rank) + hill-climb</span></li>
             <li><span>Padding</span><span class="pill">None (didactic)</span></li>
-            <li><span>Output</span><span>CSV + PNG</span></li>
+            <li><span>Output</span><span>CSV + PNG + TXT</span></li>
           </ul>
         </div>
 
@@ -293,10 +320,10 @@ if __name__ == "__main__":
         <div class="card widget" style="margin-top:1rem;">
           <h3>Parameters used</h3>
           <ul class="meta-list">
-            <li><span>p</span><span>13</span></li>
-            <li><span>q</span><span>11</span></li>
-            <li><span>e</span><span>7</span></li>
-            <li><span>Mapping</span><span>1:1 A–Z</span></li>
+            <li><span>p</span><span>101</span></li>
+            <li><span>q</span><span>113</span></li>
+            <li><span>e</span><span>17</span></li>
+            <li><span>Mapping</span><span>1:1 A–Z + space</span></li>
           </ul>
           <p class="muted" style="margin-top:.5rem">Input file: <code>rsa/input.txt</code></p>
         </div>
