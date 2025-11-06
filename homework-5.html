@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Homework 5 — Types of Means and Usefulness (Cybersecurity)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- COMMON STYLE -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    /* Base */
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+
+    /* Nav */
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+
+    /* Layout */
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width: 1024px){
+      .grid2{grid-template-columns: 2fr 0.9fr; align-items:start}
+      .aside{position:sticky;top:76px}
+    }
+
+    /* Cards & elements */
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    .card + .card{margin-top:1.1rem}
+    h1{font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:.25rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    pre{background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:.9rem;overflow:auto;font-size:.92rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;padding:.08rem .35rem;border-radius:6px}
+    figure{margin-top:.75rem}
+    img.figure{width:100%;border-radius:10px;border:1px solid #e5e7eb;display:block}
+    figcaption{text-align:center;color:#64748b;font-size:.85rem;margin-top:.35rem}
+
+    /* Sidebar widgets */
+    .widget h3{font-weight:700;margin-bottom:.25rem}
+    .pill{display:inline-block;background:#eef2ff;border:1px solid #e0e7ff;color:#3730a3;padding:.12rem .5rem;border-radius:999px;font-size:.8rem}
+    .meta-list{font-size:.95rem;color:#475569}
+    .meta-list li{display:flex;justify-content:space-between;border-top:1px dashed #e5e7eb;padding:.4rem 0}
+    .meta-list li:first-child{border-top:none}
+    .toc li{margin:.25rem 0}
+
+    /* Section separation feel */
+    .section-gap{margin-bottom:.35rem}
+    .spacer{height:.5rem}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+
+  <script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+  };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <a class="brand text-2xl" href="/">My Stats Blog</a>
+      <p class="muted">Homework 5 · Types of Means and Usefulness in Cybersecurity</p>
+    </div>
+  </header>
+
+  <nav class="sub">
+    <div class="wrap inner">
+      <a href="#intro">Introduction</a>
+      <a href="#aritmetica">Arithmetic Mean</a>
+      <a href="#ponderata">Weighted Mean</a>
+      <a href="#geometrica">Geometric Mean</a>
+      <a href="#armonica">Harmonic Mean</a>
+      <a href="#quadratica">Quadratic Mean</a>
+      <a href="#troncata">Truncated Mean</a>
+      <a href="#mediana">Median</a>
+      <a href="#moda">Mode</a>
+      <a href="#online">Online Calculation</a>
+      <a href="#sintesi">Summary</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap grid2">
+      <!-- MAIN ARTICLE -->
+      <article class="card">
+        <header class="section-gap">
+          <h1>Homework 5 — Types of Means and Their Usefulness</h1>
+          <p class="muted">Notes and applied examples in cybersecurity</p>
+        </header>
+
+        <section id="intro" class="section-gap">
+          <p>This page summarizes the main types of statistical means, when to use them, and why they are useful in the analysis of cybersecurity data (logs, traffic, response times, login attempts, etc.).</p>
+        </section>
+
+        <section id="aritmetica" class="section-gap">
+          <h2>Arithmetic Mean</h2>
+          <p><strong>Definition:</strong> The sum of all values divided by the number of observations. It is used when data are homogeneous, approximately symmetric, and without major outliers.</p>
+          <p><strong>Formula:</strong></p>
+          $$ \bar{x} = \frac{x_1 + x_2 + \dots + x_n}{n} $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Average number of packets received per host per day</li>
+            <li>Average server response time</li>
+            <li>Average number of login attempts per user</li>
+          </ul>
+          <p class="note">If the mean suddenly increases, it may indicate potential anomalies.</p>
+        </section>
+
+        <section id="ponderata" class="section-gap">
+          <h2>Weighted Mean</h2>
+          <p><strong>Definition:</strong> A mean in which each value has a weight (importance or frequency). It allows reflecting importance, duration, quantity, or confidence between measures; it includes mean by weights/frequencies. Useful for stratified samples.</p>
+          <p><strong>Formula:</strong></p>
+          $$ \bar{x}_p = \frac{w_1x_1 + w_2x_2 + \dots + w_nx_n}{w_1 + w_2 + \dots + w_n} $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Average response time weighted by the number of requests</li>
+            <li>Risk prioritization</li>
+            <li>Overall security score</li>
+          </ul>
+          <p class="note">Summarizes overall security by taking into account both severity and frequency.</p>
+        </section>
+
+        <section id="geometrica" class="section-gap">
+          <h2>Geometric Mean</h2>
+          <p><strong>Definition:</strong> The n-th root of the product of positive values. Suitable for multiplicative phenomena (rates, indices), useful for average growth rate (CAGR) or means of ratios/indices.</p>
+          <p><strong>Formula:</strong></p>
+          $$ M_g = \sqrt[n]{x_1 \times x_2 \times \dots \times x_n} $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Average growth over time of a certain type of attack</li>
+            <li>Average malware detection rate across engines</li>
+            <li>Mean of compromise probabilities</li>
+          </ul>
+          <p class="note">Prevents a single very high value from distorting the mean.</p>
+        </section>
+
+        <section id="armonica" class="section-gap">
+          <h2>Harmonic Mean</h2>
+          <p><strong>Definition:</strong> The reciprocal of the arithmetic mean of the reciprocals. Useful for quantities that are inversely proportional (e.g., average speed over equal distances). Avoid if there are zero or negative values.</p>
+          <p><strong>Formula:</strong></p>
+          $$ M_h = \frac{n}{\frac{1}{x_1} + \frac{1}{x_2} + \dots + \frac{1}{x_n}} $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Effective average data transmission speed with variable throughput</li>
+            <li>Average detection frequency among different sensors</li>
+            <li>Effective average response time with variable load over equal segments</li>
+          </ul>
+          <p class="note">Gives more weight to low values: highlights bottlenecks.</p>
+        </section>
+
+        <section id="quadratica" class="section-gap">
+          <h2>Quadratic Mean (RMS)</h2>
+          <p><strong>Definition:</strong> The square root of the mean of squares. Measures an average magnitude. Useful in engineering or physics for electrical signals, vibrations, or quadratic errors; in general, when the effective energy or amplitude matters.</p>
+          <p><strong>Formula:</strong></p>
+          $$ M_q = \sqrt{\frac{x_1^2 + x_2^2 + \dots + x_n^2}{n}} $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Network noise analysis</li>
+            <li>Quadratic deviation in CPU or defense system response times</li>
+            <li>Measurement of log variability</li>
+          </ul>
+          <p class="note">Useful to understand the “overall strength” of variations.</p>
+        </section>
+
+        <section id="troncata" class="section-gap">
+          <h2>Truncated Mean</h2>
+          <p><strong>Definition:</strong> A percentage of extreme values is symmetrically removed, and the mean is computed on the remaining ones. Used for subjective ratings, salary data with heavy tails, or company data with a few known outliers.</p>
+          <p><strong>Example:</strong></p>
+          $$ \text{data } 2, 3, 4, 100 \Rightarrow \text{truncated mean} = \frac{3 + 4}{2} = 3.5 $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Average response time excluding timeouts or bugs</li>
+            <li>Requests per second ignoring stress-test peaks</li>
+            <li>Packet size excluding dump or network error data</li>
+          </ul>
+          <p class="note">Provides a robust baseline where spikes should not affect the assessment.</p>
+        </section>
+
+        <section id="mediana" class="section-gap">
+          <h2>Median</h2>
+          <p><strong>Definition:</strong> The central value (or the mean of the two central values) after ordering. Useful for asymmetric distributions.</p>
+          <p><strong>Formula:</strong></p>
+          $$ \text{Median} = \frac{x_{n/2} + x_{n/2 + 1}}{2} $$
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Median incident resolution time</li>
+            <li>Median number of login attempts per user</li>
+            <li>Median log size representing the typical value</li>
+          </ul>
+          <p class="note">Ideal for response times or attacks with heavy tails (few very large, many small values).</p>
+        </section>
+
+        <section id="moda" class="section-gap">
+          <h2>Mode</h2>
+          <p><strong>Definition:</strong> The most frequent value; it can be bi- or multi-modal. Useful for discrete data with natural peaks or for categorical variables (brands, types, etc.).</p>
+          <h3>Examples in Cybersecurity</h3>
+          <ul>
+            <li>Most common type of attack</li>
+            <li>Most frequently targeted network port</li>
+            <li>Most recurring country among attacker IPs</li>
+          </ul>
+          <p class="note">Useful for qualitative and categorical analysis.</p>
+        </section>
+
+        <section id="online" class="section-gap">
+          <h2>Online Calculation (Mean and Variance)</h2>
+          <p>In cybersecurity and computer science, it is often necessary to compute means and variance <em>online</em>, updating statistics as new values arrive without storing the entire history.</p>
+
+          <h3>Online Arithmetic Mean</h3>
+          <p>The mean is updated by including the new value \(x_{n}\), where \(n\) is the number of observed values so far:</p>
+          $$ \bar{x}_n = \bar{x}_{n-1} + \frac{x_n - \bar{x}_{n-1}}{n} $$
+
+          <h3>Online Variance (concept)</h3>
+          <p>Variance measures how much values differ from the mean. A numerically stable update (Welford’s method) is used: compute the initial deviation, update the mean, and then update the cumulative quantity <code>M2</code>, from which both population and sample variance are derived.</p>
+
+          <p>Final variables:</p>
+          $$ n $$ <p>Number of data points received so far</p>
+          $$ \bar{x}_{n-1} $$<p>Mean computed up to the previous data point</p>
+          $$ M_2 $$<p>Cumulative sum of squared deviations</p>
+          $$ x_n $$<p>New incoming value</p>
+
+          <p><strong>Formula:</strong></p>
+          $$
+          \begin{cases}
+          \delta = x_n - \bar{x}_{n-1} \\
+          \bar{x}_n = \bar{x}_{n-1} + \frac{\delta}{n} \\
+          M_2 = M_2 + \delta (x_n - \bar{x}_n)
+          \end{cases}
+          $$
+          <p>Final variance:</p>
+          $$ s^2 = \frac{M_2}{n - 1} \qquad \sigma^2 = \frac{M_2}{n} $$
+
+          <p class="note">For continuous data streams (logs, packets, telemetry), the online approach is preferred: it requires no historical memory and remains accurate for large datasets.</p>
+        </section>
+
+        <section id="sintesi" class="section-gap">
+          <h2>Summary</h2>
+          <p>If data arrive over time, the online method is usually the best choice. If the full dataset is already available, the classical method is simpler but may become less precise as <em>n</em> grows large.</p>
+        </section>
+
+        <footer class="spacer"></footer>
+      </article>
+
+      <!-- ASIDE -->
+      <aside class="aside">
+        <div class="card widget">
+          <h3>Details</h3>
+          <ul class="meta-list">
+            <li><span>Assignment</span><span>Homework 5</span></li>
+            <li><span>Category</span><span>Statistics &amp; Cybersecurity</span></li>
+            <li><span>Type</span><span>Notes</span></li>
+          </ul>
+        </div>
+
+        <div class="card widget">
+          <h3>Tags</h3>
+          <div class="flex gap-2 flex-wrap">
+            <span class="pill">statistics</span>
+            <span class="pill">cybersecurity</span>
+            <span class="pill">means</span>
+            <span class="pill">variance</span>
+            <span class="pill">streaming</span>
+          </div>
+        </div>
+
+        <div class="card widget">
+          <h3>Table of Contents</h3>
+          <ul class="toc">
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#aritmetica">Arithmetic Mean</a></li>
+            <li><a href="#ponderata">Weighted Mean</a></li>
+            <li><a href="#geometrica">Geometric Mean</a></li>
+            <li><a href="#armonica">Harmonic Mean</a></li>
+            <li><a href="#quadratica">Quadratic Mean</a></li>
+            <li><a href="#troncata">Truncated Mean</a></li>
+            <li><a href="#mediana">Median</a></li>
+            <li><a href="#moda">Mode</a></li>
+            <li><a href="#online">Online Calculation</a></li>
+            <li><a href="#sintesi">Summary</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="wrap">
+      <p>© 2025 · Salvatore Salis · Statistics</p>
+    </footer>
+  </main>
+</body>
+</html>
