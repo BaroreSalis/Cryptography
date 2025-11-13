@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Homework 6 — Server Security Simulation (Random Walk & Binomial)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width: 1024px){.grid2{grid-template-columns: 2fr 0.9fr;align-items:start}.aside{position:sticky;top:76px}}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    h1{font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:.25rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    .plot{max-width:100%;border-radius:10px;border:1px solid #e5e7eb;box-shadow:0 4px 10px rgba(0,0,0,.05);margin-top:1rem}
+    input{border:1px solid #d1d5db;border-radius:6px;padding:.25rem .5rem;width:90px}
+    button{background-color:#2563eb;color:#fff;border:none;border-radius:6px;padding:8px 14px;margin-top:.5rem;cursor:pointer}
+    button:hover{background-color:#1d4ed8}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <a class="brand text-2xl" href="/">My Stats Blog</a>
+      <p class="muted">Homework 6 · Simulation and Probability in Cybersecurity</p>
+    </div>
+  </header>
+
+  <nav class="sub">
+    <div class="wrap inner">
+      <a href="#intro">Introduction</a>
+      <a href="#params">Simulation Parameters</a>
+      <a href="#walks">Random Walks</a>
+      <a href="#distribution">Distribution Analysis</a>
+      <a href="#discussion">Discussion</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap grid2">
+      <!-- MAIN ARTICLE -->
+      <article class="card">
+        <header>
+          <h1>Homework 6 — Server Security Simulation</h1>
+          <p class="muted">Random Walk and Convergence to the Binomial Distribution</p>
+        </header>
+
+        <section id="intro" class="mt-4">
+          <p>
+            In this experiment, I simulated the security status of a server exposed to multiple attackers over several weeks.
+            Each week, the server can either remain secure (<code>+1</code>) or be breached (<code>-1</code>).
+            The probability of a breach increases with the number of attackers and their individual success probability.
+          </p>
+          <p>
+            The main goal is to show how the cumulative score of the server behaves like a <strong>random walk</strong> and how,
+            after many weeks and simulations, the distribution of final scores tends to approach a <strong>binomial distribution</strong>.
+          </p>
+          <p class="note">
+            Intuitively, this means that with many independent trials, the randomness “averages out” — a concept similar to the Law of Large Numbers.
+          </p>
+        </section>
+
+        <section id="params" class="mt-8">
+          <h2>Simulation Parameters</h2>
+          <p>Use the inputs below to set the experiment conditions, then click <strong>Run Simulation</strong>.</p>
+          <div>
+            <label>Weeks (n):</label> <input type="number" id="weeks" value="20"><br>
+            <label>Attackers (m):</label> <input type="number" id="attackers" value="5"><br>
+            <label>Success probability (p):</label> <input type="number" id="prob" value="0.1" step="0.01"><br>
+            <label>Number of trajectories:</label> <input type="number" id="trajs" value="5000"><br>
+            <button onclick="simulate()">Run Simulation 🔁</button>
+          </div>
+          <p id="prob-info" class="note mt-3">⚙️ Combined breach probability: waiting for input...</p>
+        </section>
+
+        <section id="walks" class="mt-8">
+          <h2>Random Walk of Server Security</h2>
+          <p>
+            The plot below shows a few random trajectories of the server’s cumulative score across weeks.
+            Each line represents one possible history of the system: when the score goes up, the server resisted;
+            when it goes down, at least one attacker succeeded.
+          </p>
+          <div id="walksPlot" class="plot" style="height:420px;"></div>
+        </section>
+
+        <section id="distribution" class="mt-8">
+          <h2>Distribution of Final Scores</h2>
+          <p>
+            This histogram compares the <strong>empirical distribution</strong> of final scores
+            (from thousands of random trajectories) with the <strong>theoretical binomial distribution</strong>.
+            As the number of weeks and simulations increases, the two shapes converge closely.
+          </p>
+          <div id="distPlot" class="plot" style="height:420px;"></div>
+        </section>
+
+        <section id="discussion" class="mt-8">
+          <h2>Discussion</h2>
+          <p>
+            The random walk behavior reflects the uncertainty of weekly attacks, but over time,
+            the average behavior becomes predictable. When the probability of breach is low,
+            the server tends to have a positive cumulative score (it resists most attacks).
+            For higher values of <code>m</code> or <code>p</code>, the risk grows and the final scores shift toward negative values.
+          </p>
+          <p>
+            This small simulation connects cybersecurity with classical probability theory:
+            <em>as the number of weeks and simulations grows, empirical results align with the binomial law</em>.
+          </p>
+          <p class="note">
+            From a cybersecurity perspective, this means that risk levels can be statistically modeled and predicted
+            even when individual events are random.
+          </p>
+        </section>
+
+        <footer class="mt-10 text-sm text-gray-500">
+          © 2025 · Salvatore Salis — Statistics & Cybersecurity
+        </footer>
+      </article>
+
+      <!-- ASIDE -->
+      <aside class="aside">
+        <div class="card">
+          <h3>Simulation Info</h3>
+          <ul class="list-disc ml-5 text-sm text-gray-600">
+            <li>Independent weekly trials</li>
+            <li>Each attacker has success prob. p</li>
+            <li>Server is breached if any succeed</li>
+            <li>+1 if secure, -1 if breached</li>
+          </ul>
+        </div>
+
+        <div class="card mt-4">
+          <h3>Tags</h3>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">random walk</span>
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">binomial</span>
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">cybersecurity</span>
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">simulation</span>
+          </div>
+        </div>
+
+        <div class="card mt-4">
+          <h3>Quick Reference</h3>
+          <ul class="text-sm text-gray-600">
+            <li><strong>p<sub>breach</sub></strong> = 1 - (1 - p)<sup>m</sup></li>
+            <li><strong>Score</strong> = Σ(+1 secure, −1 breach)</li>
+            <li>Final score → Binomial tendency</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+  function simulate() {
+    const n = parseInt(document.getElementById('weeks').value);
+    const m = parseInt(document.getElementById('attackers').value);
+    const p = parseFloat(document.getElementById('prob').value);
+    const numTraj = parseInt(document.getElementById('trajs').value);
+
+    const p_breach = 1 - Math.pow(1 - p, m);
+    const p_secure = 1 - p_breach;
+    document.getElementById('prob-info').innerHTML =
+      `⚙️ Combined breach probability: <strong>${p_breach.toFixed(3)}</strong>`;
+
+    const walks = [];
+    const finalScores = [];
+
+    for (let t = 0; t < numTraj; t++) {
+      let score = 0;
+      const cumulative = [score];
+      for (let i = 0; i < n; i++) {
+        const breach = Math.random() < p_breach;
+        score += breach ? -1 : +1;
+        cumulative.push(score);
+      }
+      walks.push(cumulative);
+      finalScores.push(score);
+    }
+
+    const walkTraces = walks.slice(0, 10).map((walk) => ({
+      x: Array.from({length: n+1}, (_, i) => i),
+      y: walk,
+      mode: 'lines',
+      line: {width: 1},
+      name: 'Trajectory'
+    }));
+
+    Plotly.newPlot('walksPlot', walkTraces, {
+      title: 'Random Walk trajectories (server cumulative score)',
+      xaxis: {title: 'Week'},
+      yaxis: {title: 'Cumulative Score'},
+      showlegend: false,
+      plot_bgcolor: '#fff',
+      paper_bgcolor: '#fff'
+    });
+
+    const counts = {};
+    finalScores.forEach(s => counts[s] = (counts[s] || 0) + 1);
+    const uniqueScores = Object.keys(counts).map(Number).sort((a,b)=>a-b);
+    const empirical = uniqueScores.map(s => counts[s] / numTraj);
+
+    const factorial = (x) => x <= 1 ? 1 : x * factorial(x - 1);
+    const binomPMF = (k,n,p) =>
+      factorial(n)/(factorial(k)*factorial(n-k)) * Math.pow(p,k)*Math.pow(1-p,n-k);
+
+    const theoreticalScores = [];
+    const theoretical = [];
+    for (let k = 0; k <= n; k++) {
+      theoreticalScores.push(2 * k - n);
+      theoretical.push(binomPMF(k, n, p_secure));
+    }
+
+    const traceEmpirical = {x: uniqueScores, y: empirical, type:'bar', name:'Empirical', marker:{color:'#60a5fa'}};
+    const traceTheoretical = {x: theoreticalScores, y: theoretical, mode:'lines+markers', name:'Theoretical', line:{color:'#ef4444'}};
+
+    Plotly.newPlot('distPlot', [traceEmpirical, traceTheoretical], {
+      title: `Final Score Distribution (${numTraj} simulations)`,
+      xaxis: {title: 'Final Score'},
+      yaxis: {title: 'Probability'},
+      plot_bgcolor: '#fff',
+      paper_bgcolor: '#fff'
+    });
+  }
+  </script>
+</body>
+</html>

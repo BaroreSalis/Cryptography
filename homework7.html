@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Homework 7 — Connections Between Bernoulli Process and Binomial Simulation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width: 1024px){.grid2{grid-template-columns: 2fr 0.9fr;align-items:start}.aside{position:sticky;top:76px}}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    h1{font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:.25rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;padding:.08rem .35rem;border-radius:6px}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+  <script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+  };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <a class="brand text-2xl" href="/">My Stats Blog</a>
+      <p class="muted">Homework 7 · Mathematical analogies in simulation and cybersecurity</p>
+    </div>
+  </header>
+
+  <nav class="sub">
+    <div class="wrap inner">
+      <a href="#intro">Introduction</a>
+      <a href="#similarities">Similarities</a>
+      <a href="#differences">Differences</a>
+      <a href="#math">Mathematical Connections</a>
+      <a href="#combinatorics">Combinatorial Perspective</a>
+      <a href="#conclusion">Conclusion</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap grid2">
+      <article class="card">
+        <header>
+          <h1>Homework 7 — Analogy Between the Bernoulli Process and the Server Security Random Walk</h1>
+          <p class="muted">Understanding the deeper mathematical structures behind simulations</p>
+        </header>
+
+        <section id="intro">
+          <p>
+            In the previous homework, I simulated the <strong>Law of Large Numbers</strong> (LLN) using a
+            <strong>Bernoulli process</strong> — independent trials with outcomes 0 or 1.
+            In this one, the <strong>Server Security simulation</strong> represents a related but
+            slightly more complex random process, where multiple attackers act as combined Bernoulli events.
+          </p>
+          <p>
+            Both experiments illustrate how discrete random processes converge to stable probabilistic patterns
+            when repeated many times. However, the second model introduces cumulative interaction,
+            combining Bernoulli events into a <strong>binomial structure</strong> that behaves like a <strong>random walk</strong>.
+          </p>
+          <p class="note">
+            The bridge between them lies in how independent binary events (success/failure) combine:
+            LLN focuses on average frequency, while the Random Walk focuses on cumulative outcome.
+          </p>
+        </section>
+
+        <section id="similarities" class="mt-6">
+          <h2>1️⃣ Similarities</h2>
+          <ul>
+            <li>Both rely on <strong>Bernoulli trials</strong> — independent binary outcomes.</li>
+            <li>Each trial has a constant probability \(p\) of success and \(1-p\) of failure.</li>
+            <li>With many repetitions, the outcomes stabilize and become predictable in a statistical sense.</li>
+            <li>Both processes can be described using the <strong>binomial distribution</strong>.</li>
+          </ul>
+          <p>
+            In the LLN simulation, the frequency of success converged to \(p\).
+            In the Server Security simulation, the cumulative score evolves as a random walk driven by the same underlying Bernoulli structure.
+          </p>
+        </section>
+
+        <section id="differences" class="mt-6">
+          <h2>2️⃣ Differences</h2>
+          <ul>
+            <li>
+              The <strong>LLN simulation</strong> measures <em>average relative frequency</em> of success.
+              Its main variable is \( \frac{S_n}{n} \), where \(S_n\) is the number of successes after \(n\) trials.
+            </li>
+            <li>
+              The <strong>Random Walk simulation</strong> sums the signed outcomes: \( +1 \) for success (server secure) and \( -1 \) for failure (breach).
+              The main variable is \( X_n = \sum_{i=1}^{n} Y_i \), with \(Y_i \in \{+1, -1\}\).
+            </li>
+            <li>
+              The first process converges to a <strong>mean value</strong> (LLN), the second fluctuates around a
+              <strong>probabilistic expectation</strong> that follows the binomial pattern.
+            </li>
+          </ul>
+          <p class="note">
+            Conceptually, LLN shows stability in proportions; the Random Walk shows variability in accumulation.
+          </p>
+        </section>
+
+        <section id="math" class="mt-6">
+          <h2>3️⃣ Mathematical Connections</h2>
+          <p>
+            Both experiments are mathematically rooted in the <strong>binomial theorem</strong>:
+          </p>
+          $$
+          (p + q)^n = \sum_{k=0}^{n} \binom{n}{k} p^k q^{n-k}
+          $$
+          <p>
+            Each term corresponds to the probability of obtaining exactly \(k\) successes in \(n\) Bernoulli trials.
+            The coefficients \( \binom{n}{k} \) come from <strong>Pascal’s Triangle</strong>,
+            which organizes all possible combinations of successes and failures.
+          </p>
+          <p>
+            In the security model, each path of the random walk corresponds to one sequence of outcomes —
+            its probability is proportional to \( p^k (1-p)^{n-k} \).
+          </p>
+          <p class="note">
+            The binomial theorem links directly to our simulation probabilities — it explains why the histogram of final scores tends to match the theoretical binomial curve.
+          </p>
+        </section>
+
+        <section id="combinatorics" class="mt-6">
+          <h2>4️⃣ Combinatorial and Fibonacci Analogies</h2>
+          <p>
+            The combinatorial structure of these experiments goes beyond simple probability.
+            The <strong>binomial coefficients</strong> \( \binom{n}{k} \) also appear in many counting problems,
+            recursive algorithms, and even in the <strong>Fibonacci sequence</strong> through
+            combinatorial identities.
+          </p>
+          <p>
+            For example, Fibonacci numbers can be expressed as sums of binomial coefficients:
+          </p>
+          $$
+          F_{n} = \sum_{k=0}^{\lfloor (n-1)/2 \rfloor} \binom{n - k - 1}{k}
+          $$
+          <p>
+            This shows how combinatorics, recursion, and probabilistic models share the same mathematical DNA.
+            In our context, the number of ways the server can “walk” to a specific final score is also given by a binomial coefficient.
+          </p>
+          <p class="note">
+            Every random trajectory corresponds to a unique combination of successes and failures — in other words, to one line in Pascal’s Triangle.
+          </p>
+        </section>
+
+        <section id="conclusion" class="mt-6">
+          <h2>5️⃣ Conclusion</h2>
+          <p>
+            Both simulations, the LLN and the Random Walk, describe how randomness behaves under repetition.
+            One emphasizes <em>stability of frequency</em>, the other <em>distribution of accumulated outcomes</em>.
+            Mathematically, both are governed by the binomial law and its combinatorial properties.
+          </p>
+          <p>
+            These analogies are valuable in cybersecurity: they demonstrate that even in systems exposed to random threats,
+            the long-term behavior is not entirely unpredictable — it follows clear probabilistic patterns rooted in classical mathematics.
+          </p>
+          <p class="note">
+            The Bernoulli process, the binomial coefficients, and Pascal’s Triangle are not just abstract ideas:
+            they are the foundation of every statistical model of reliability and risk.
+          </p>
+        </section>
+
+        <footer class="mt-8 text-sm text-gray-500">
+          © 2025 · Salvatore Salis — Statistics & Cybersecurity
+        </footer>
+      </article>
+
+      <!-- ASIDE -->
+      <aside class="aside">
+        <div class="card">
+          <h3>Mathematical Focus</h3>
+          <ul class="list-disc ml-5 text-sm text-gray-600">
+            <li>Bernoulli process</li>
+            <li>Binomial coefficients</li>
+            <li>Pascal’s Triangle</li>
+            <li>Binomial theorem</li>
+            <li>Combinatorics & Fibonacci</li>
+          </ul>
+        </div>
+
+        <div class="card mt-4">
+          <h3>Tags</h3>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">LLN</span>
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">Bernoulli</span>
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">Binomial</span>
+            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border border-indigo-100">Combinatorics</span>
+          </div>
+        </div>
+
+        <div class="card mt-4">
+          <h3>Quick Reference</h3>
+          <ul class="text-sm text-gray-600">
+            <li>LLN → frequency convergence</li>
+            <li>Random Walk → cumulative sum</li>
+            <li>\( \binom{n}{k} \) → combinations</li>
+            <li>Pascal’s Triangle → recursion</li>
+            <li>Fibonacci ↔ binomial identities</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
