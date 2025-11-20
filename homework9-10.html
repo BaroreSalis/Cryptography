@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Homework 9–10 — Probability Theory & Counting Process Simulation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <style>
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width: 1024px){.grid2{grid-template-columns:2fr 0.9fr;align-items:start}.aside{position:sticky;top:76px}}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    h1{font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:.25rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;padding:.08rem .35rem;border-radius:6px}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+
+  <script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+  };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap hero">
+    <a class="brand text-2xl" href="index.html">My Stats Blog</a>
+    <p class="muted">Homework 9–10 · Probability Interpretations, Measure Theory, Poisson Processes & Security Applications</p>
+  </div>
+</header>
+
+<nav class="sub">
+  <div class="wrap inner">
+    <a href="#interpretations">Probability Interpretations</a>
+    <a href="#measure">Measure Theory</a>
+    <a href="#axioms">Axioms & Properties</a>
+    <a href="#simulation">Simulation</a>
+    <a href="#analysis">Process Analysis</a>
+    <a href="#lambda">Meaning of λ</a>
+    <a href="#cyber">Cybersecurity</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap grid2">
+
+    <!-- MAIN CARD -->
+    <article class="card">
+
+      <header>
+        <h1>Homework 9–10 — Probability Theory & Counting Processes</h1>
+        <p class="muted">
+          
+      </header>
+
+      <!-- SECTION 1 -->
+      <section id="interpretations">
+        <h2>1️⃣ Main Interpretations of Probability</h2>
+
+        <p>
+            Probability has been interpreted in several ways throughout the history of mathematics and science.
+            Each interpretation tries to answer the same question:
+            <strong>What does it mean to say that an event has probability p?</strong>
+        </p>
+
+        <h3 class="mt-4">🎲 Classical Interpretation</h3>
+        <p>
+            Introduced by Laplace, the classical interpretation defines probability as:
+        </p>
+        <p class="note text-sm">
+            <em>Probability = number of favorable outcomes / number of equally likely outcomes.</em>
+        </p>
+        <p>
+            It works well for symmetric experiments (coins, dice, cards), but fails when outcomes are not equally likely,
+            or when dealing with infinite or continuous sample spaces.
+        </p>
+
+        <h3 class="mt-4">📈 Frequentist Interpretation</h3>
+        <p>
+            The frequentist view defines probability as the long-run frequency of an event occurring in repeated trials:
+        </p>
+        <p class="note text-sm">
+            <em>P(A) = lim<sub>n→∞</sub> (number of times A occurs) / n</em>
+        </p>
+        <p>
+            It is objective and experiment-based, but cannot describe one-time events
+            (e.g., probability that a specific candidate will win an election).
+        </p>
+
+        <h3 class="mt-4">🧠 Bayesian Interpretation</h3>
+        <p>
+            The Bayesian view treats probability as <strong>a degree of belief</strong>.
+            It can incorporate prior knowledge and updates through Bayes' theorem.
+        </p>
+        <p>
+            It is flexible and works with incomplete information, but depends on subjective choices of priors.
+        </p>
+
+        <h3 class="mt-4">📐 Geometric Interpretation</h3>
+        <p>
+            Probability is defined using geometric measures such as length, area, or volume.
+            For example: choosing a random point uniformly in a segment.
+        </p>
+        <p>
+            This is fundamental for continuous probability distributions.
+        </p>
+
+        <h3 class="mt-4">📘 How the Axiomatic Approach Resolves Conflicts</h3>
+        <p>
+            Before Kolmogorov (1933), these interpretations often disagreed or led to paradoxes.
+            The axiomatic system fixes this by defining probability as a function:
+        </p>
+
+        <pre class="bg-gray-100 p-3 rounded text-sm">
+        P : 𝓕 → [0,1]
+        </pre>
+
+        <p>where 𝓕 is a σ-algebra of measurable sets, satisfying:</p>
+        <ul>
+            <li><strong>Non-negativity</strong>: P(A) ≥ 0</li>
+            <li><strong>Normalization</strong>: P(Ω) = 1</li>
+            <li><strong>σ-additivity</strong>: for disjoint A<sub>i</sub>,
+            <br>P(⋃ A<sub>i</sub>) = Σ P(A<sub>i</sub>)
+            </li>
+        </ul>
+        <p>
+            Once these axioms are accepted, <strong>all interpretations become just ways to assign probabilities</strong>,
+            but the mathematics is always consistent and unambiguous.
+        </p>
+      </section>
+
+      <!-- SECTION 2 -->
+      <section id="measure" class="mt-10">
+        <h2>2️⃣ Probability and Measure Theory</h2>
+
+        <h3 class="mt-4">📦 Sample Space and σ-Algebras</h3>
+        <p>
+            A probability space is a triple <strong>(Ω, 𝓕, P)</strong> where:
+        </p>
+        <ul>
+            <li>Ω is the sample space (all possible outcomes)</li>
+            <li>𝓕 is a σ-algebra: a collection of events closed under complements and countable unions</li>
+            <li>P is a probability measure defined on 𝓕</li>
+        </ul>
+
+        <h3 class="mt-4">📏 Probability Measures</h3>
+        <p>
+            A probability measure is a function that assigns a probability to each event in a coherent way.
+            It is a special case of a mathematical measure, with total mass 1.
+        </p>
+
+        <h3 class="mt-4">📊 Measurable Functions and Random Variables</h3>
+        <p>
+            A random variable is a measurable function:
+        </p>
+
+        <pre class="bg-gray-100 p-3 rounded text-sm">
+        X : Ω → ℝ
+        </pre>
+
+        <p>
+            Measurability means that for every real number a, the set {X ≤ a} is an event in 𝓕.
+            This allows us to define:
+        </p>
+        <ul>
+            <li>probability distributions</li>
+            <li>expected values</li>
+            <li>variance</li>
+            <li>conditional probabilities</li>
+        </ul>
+
+        <p class="note">
+            Measure theory gives probability its rigorous foundation, especially for continuous distributions
+            and stochastic processes such as Brownian motion and Poisson processes.
+        </p>     
+      </section>
+
+      <!-- SECTION 3 -->
+      <section id="axioms" class="mt-10">
+        <h2>3️⃣ Subadditivity and the Inclusion–Exclusion Principle</h2>
+
+        <h3 class="mt-4">📉 Subadditivity</h3>
+        <p>
+            Subadditivity states:
+        </p>
+
+        <p class="note text-sm">
+            <strong>P(A ∪ B) ≤ P(A) + P(B)</strong>
+        </p>
+
+        <p>
+            Proof:
+        </p>
+        <p>
+            We can write:
+        </p>
+
+        <pre class="bg-gray-100 p-3 rounded text-sm">
+        A ∪ B = A ∪ (B \ A)
+        </pre>
+
+        <p>
+            The sets <code>A</code> and <code>B \ A</code> are disjoint.
+            By σ-additivity:
+        </p>
+
+        <pre class="bg-gray-100 p-3 rounded text-sm">
+        P(A ∪ B) = P(A) + P(B \ A)
+        </pre>
+
+        <p>
+            Since <strong>P(B \ A) ≤ P(B)</strong>, we obtain:
+        </p>
+        <p class="note text-sm">
+            P(A ∪ B) ≤ P(A) + P(B)
+        </p>
+
+        <h3 class="mt-6">➕➖ Inclusion–Exclusion Principle</h3>
+
+        <p>
+            For two events A and B:
+        </p>
+
+        <pre class="bg-gray-100 p-3 rounded text-sm">
+        P(A ∪ B) = P(A) + P(B) – P(A ∩ B)
+        </pre>
+
+        <p>
+            Explanation:
+        </p>
+        <ul>
+            <li>P(A) counts all outcomes in A</li>
+            <li>P(B) counts all outcomes in B</li>
+            <li>But the overlap A ∩ B is counted twice</li>
+        </ul>
+
+        <p class="note">
+            Inclusion–exclusion corrects this overcounting.
+        </p>
+
+        <p class="mt-4">
+            For three events:
+        </p>
+
+        <pre class="bg-gray-100 p-3 rounded text-sm">
+        P(A ∪ B ∪ C) =
+        P(A) + P(B) + P(C)
+        − P(A ∩ B) − P(A ∩ C) − P(B ∩ C)
+        + P(A ∩ B ∩ C)
+        </pre>
+
+        <p>
+            This generalizes to any number of sets.  
+            The alternating + and – structure avoids double or triple counting intersections.
+        </p>
+      </section>
+
+      <!-- SECTION 4 — JS SIMULATION -->
+      <section id="simulation" class="mt-12">
+        <h2>4️⃣ JavaScript Simulation of a Counting Process</h2>
+        <p>
+          We now simulate a counting process over the interval <code>[0,1]</code>.
+          The interval is divided into <strong>n small subintervals</strong>, and in each one an event
+          may occur with probability \( \lambda / n \).
+          When \( n \) is large, this discrete model approximates a <strong>Poisson process</strong> with rate λ.
+        </p>
+
+        <p class="note">
+          The first graph displays the <strong>event times</strong>, while the second shows
+          the <strong>cumulative count N(t)</strong>, the step-like function characteristic of Poisson processes.
+        </p>
+
+        <div class="mt-4 p-4 border rounded-lg bg-gray-50">
+
+          <label class="block mb-2 font-medium">Rate λ:</label>
+          <input id="lambdaInput" type="number" value="5" step="0.1"
+                 class="border p-2 rounded w-full mb-4">
+
+          <label class="block mb-2 font-medium">Number of intervals n:</label>
+          <input id="nInput" type="number" value="5000"
+                 class="border p-2 rounded w-full mb-4">
+
+          <button onclick="runSimulation()"
+                  class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">
+            Run Simulation
+          </button>
+
+          <p class="mt-4 font-medium">Total events: <span id="countResult">–</span></p>
+
+          <h3 class="mt-6">Event Times (Spikes)</h3>
+          <canvas id="eventCanvas" width="600" height="100"
+                  class="border rounded bg-white mt-2"></canvas>
+
+          <h3 class="mt-6">Cumulative Count N(t)</h3>
+          <canvas id="countCanvas" width="600" height="150"
+                  class="border rounded bg-white mt-2"></canvas>
+
+        </div>
+
+<script>
+function runSimulation() {
+  const lambda = parseFloat(document.getElementById("lambdaInput").value);
+  const n = parseInt(document.getElementById("nInput").value);
+  const p = lambda / n;
+
+  let events = [];
+  for (let i = 0; i < n; i++) {
+    if (Math.random() < p) events.push(i / n);
+  }
+
+  document.getElementById("countResult").textContent = events.length;
+
+  // Spike plot
+  const eventCanvas = document.getElementById("eventCanvas");
+  const ectx = eventCanvas.getContext("2d");
+  ectx.clearRect(0, 0, eventCanvas.width, eventCanvas.height);
+  ectx.strokeStyle = "#2563eb";
+  events.forEach(t => {
+    const x = t * eventCanvas.width;
+    ectx.beginPath();
+    ectx.moveTo(x, 10);
+    ectx.lineTo(x, 90);
+    ectx.stroke();
+  });
+
+  // Cumulative count plot
+  const countCanvas = document.getElementById("countCanvas");
+  const cctx = countCanvas.getContext("2d");
+  cctx.clearRect(0, 0, countCanvas.width, countCanvas.height);
+
+  let count = 0;
+  const baseY = countCanvas.height - 30;
+
+  cctx.strokeStyle = "#16a34a";
+  cctx.lineWidth = 2;
+  cctx.beginPath();
+  cctx.moveTo(0, baseY);
+
+  events.forEach(t => {
+    const x = t * countCanvas.width;
+    const y = baseY - count * 10;
+
+    cctx.lineTo(x, y);
+    count++;
+    cctx.lineTo(x, baseY - count * 10);
+  });
+
+  cctx.lineTo(countCanvas.width, baseY - count * 10);
+  cctx.stroke();
+}
+</script>
+
+      </section>
+
+      <!-- SECTION 5 -->
+      <section id="analysis" class="mt-12">
+        <h2>5️⃣ What Stochastic Process Does This Approximate?</h2>
+        <p>
+          As the number of intervals becomes very large and the probability in each interval becomes
+          small, the discrete model converges to the <strong>Poisson process</strong>.
+        </p>
+        <ul>
+          <li>Independent increments</li>
+          <li>Stationary increments</li>
+          <li>$N(t) \sim \text{Poisson}(\lambda t)$</li>
+        </ul>
+        <p>
+          The cumulative graph clearly shows the <strong>step-like behavior</strong> typical of Poisson
+          counting processes.
+        </p>
+      </section>
+
+      <!-- SECTION 6 -->
+      <section id="lambda" class="mt-12">
+        <h2>6️⃣ Interpretation of the Rate Parameter λ</h2>
+        <p>
+          The parameter λ represents the <strong>average number of events per unit time</strong>.
+          It also determines the distribution of waiting times between events, which follow an
+          exponential distribution with mean \(1/\lambda\).
+        </p>
+      </section>
+
+      <!-- NEW CYBERSECURITY SECTION -->
+      <section id="cyber" class="mt-12">
+        <h2>7️⃣ Applications in Cybersecurity</h2>
+        <p>
+          Poisson processes and counting models are widely used in cybersecurity because many digital
+          events arrive randomly but with a measurable average rate. Understanding λ helps to build
+          statistical baselines and detect anomalies.
+        </p>
+
+        <h3 class="mt-4">🔐 1. Network Intrusion Attempts</h3>
+        <p>
+          SSH brute-force attempts or port scans often follow a Poisson arrival pattern.  
+          A sudden increase in the number of events (e.g., from λ=3 to 40 in one hour)
+          strongly suggests malicious activity.
+        </p>
+
+        <h3 class="mt-4">📡 2. DDoS Traffic Modeling</h3>
+        <p>
+          Normal incoming traffic behaves roughly like a Poisson process.  
+          During a DDoS attack, the rate λ grows dramatically,
+          creating strong deviations from the expected pattern.
+        </p>
+
+        <h3 class="mt-4">🛡 3. Log Events and Security Alerts</h3>
+        <p>
+          Failed logins, firewall blocks, and IDS alerts often follow stable average rates.
+          Monitoring λ allows early detection of:
+        </p>
+        <ul>
+          <li>password spraying attacks</li>
+          <li>credential stuffing</li>
+          <li>malware beaconing</li>
+        </ul>
+
+        <h3 class="mt-4">🕵️ 4. Anomaly Detection</h3>
+        <p>
+          SIEM systems track deviations from Poisson-like behavior.
+          Long silent periods or sudden bursts indicate potential compromise.
+        </p>
+
+        <h3 class="mt-4">📈 Example: SSH Attack Detection</h3>
+        <p>
+          If a server normally receives 3 failed SSH logins per hour (λ=3),
+          but suddenly receives 40, the event is extremely unlikely under a
+          Poisson(3) model — strongly suggesting an attack.
+        </p>
+      </section>
+
+      <footer class="mt-8 text-sm text-gray-500">
+        © 2025 · Salvatore Salis — Statistics, Probability & Cybersecurity
+      </footer>
+
+    </article>
+
+    <!-- ASIDE -->
+    <aside class="aside">
+
+      <div class="card">
+        <h3>Topics</h3>
+        <ul class="list-disc ml-5 text-sm text-gray-600">
+          <li>Kolmogorov Axioms</li>
+          <li>Measure Theory</li>
+          <li>Poisson Processes</li>
+          <li>Counting Models</li>
+          <li>Cybersecurity Analytics</li>
+        </ul>
+      </div>
+
+      <div class="card mt-4">
+        <h3>Tags</h3>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs">Poisson</span>
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs">Cybersecurity</span>
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs">Simulation</span>
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs">Probability</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+</main>
+
+</body>
+</html>
