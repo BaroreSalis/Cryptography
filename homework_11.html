@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Understanding the Wiener Process with the Euler–Maruyama Method</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <style>
+    body{background:#f8fafc;color:#1f2937;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    header{background:#fff;border-bottom:1px solid #e5e7eb}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 1rem}
+    .hero{padding:28px 0 18px}
+    .brand{font-weight:800;letter-spacing:-.01em;color:#0f172a}
+    nav.sub{position:sticky;top:0;z-index:40;background:#ffffffcc;backdrop-filter:blur(6px);border-bottom:1px solid #e5e7eb}
+    nav.sub .inner{display:flex;gap:.75rem;flex-wrap:wrap;padding:.6rem 0}
+    nav.sub a{font-size:.95rem;color:#334155;padding:.25rem .5rem;border-radius:8px}
+    nav.sub a:hover{background:#f1f5f9;text-decoration:underline}
+    main{padding:24px 0 56px}
+    .grid2{display:grid;gap:1.25rem;grid-template-columns:1fr}
+    @media (min-width:1024px){.grid2{grid-template-columns:2fr 0.9fr;align-items:start}.aside{position:sticky;top:76px}}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.25rem;box-shadow:0 2px 4px rgba(15,23,42,.04)}
+    h1{font-size:1.6rem;font-weight:800;color:#0f172a;margin-bottom:.25rem}
+    h2{font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:.25rem}
+    h3{font-size:1.05rem;font-weight:700;color:#111827;margin-top:.7rem;margin-bottom:.25rem}
+    p{line-height:1.75;margin-top:.55rem}
+    ul{margin-left:1.25rem;list-style:disc}
+    .muted{color:#475569}
+    .note{background:#fefce8;border:1px solid #fde68a;color:#78350f;border-radius:10px;padding:.75rem .9rem;font-size:.95rem;margin-top:.75rem}
+    code{background:#f1f5f9;border:1px solid #e2e8f0;padding:.08rem .35rem;border-radius:6px}
+    footer{color:#6b7280;text-align:center;padding-top:28px;border-top:1px solid #e5e7eb;margin-top:28px}
+  </style>
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap hero">
+    <a class="brand text-2xl" href="index.html">My Stats Blog</a>
+    <p class="muted">Exploring randomness, simulation, and their role in modern technology</p>
+  </div>
+</header>
+
+<nav class="sub">
+  <div class="wrap inner">
+    <a href="#intro">Introduction</a>
+    <a href="#wiener">Wiener Process</a>
+    <a href="#euler">Euler–Maruyama</a>
+    <a href="#simulator">Interactive Demo</a>
+    <a href="#applications">Real-Life Uses</a>
+    <a href="#cyber">Cybersecurity</a>
+    <a href="#conclusion">Final Thoughts</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap grid2">
+
+    <!-- MAIN ARTICLE -->
+    <article class="card">
+
+      <header>
+        <h1>Understanding the Wiener Process with the Euler–Maruyama Method</h1>
+      </header>
+
+      <!-- INTRO -->
+      <section id="intro">
+        <h2>1. Introduction</h2>
+        <p>
+          Randomness plays an important role in many areas of science and technology.
+          From financial markets to biological systems, from network traffic to cybersecurity,
+          uncertainty is not just noise—it is part of how the world works.
+        </p>
+        <p>
+          One of the most famous mathematical tools used to describe randomness is the
+          <strong>Wiener Process</strong> (also known as Brownian Motion). It is a continuous
+          stochastic process that captures the idea of small random movements over time.
+        </p>
+        <p>
+          In this blog post, I explore how the Wiener Process works and how we can simulate it
+          using a very accessible numerical method: the <strong>Euler–Maruyama method</strong>.
+          To make everything more practical, I built an interactive visualization where you can
+          generate paths and observe how randomness behaves.
+        </p>
+      </section>
+
+      <!-- WIENER -->
+      <section id="wiener" class="mt-6">
+        <h2>2. What Exactly Is a Wiener Process?</h2>
+        <p>
+          A Wiener Process \(W_t\) is a continuous-time stochastic process with these properties:
+        </p>
+        <ul>
+          <li>It starts at zero: \(W_0 = 0\).</li>
+          <li>Its increments are independent and normally distributed.</li>
+          <li>The variance grows with time: \(W_t \sim N(0, t)\).</li>
+          <li>The path is continuous but extremely irregular.</li>
+        </ul>
+        <p>
+          It was first used to describe the motion of dust particles suspended in fluid,
+          constantly hit by invisible molecules. Today, it is a key building block in
+          stochastics and appears in dozens of scientific fields.
+        </p>
+        <p class="note">
+          A good intuition is to imagine a value that keeps moving up or down randomly at every
+          moment. There is no direction and no memory—the future is independent of the past.
+        </p>
+      </section>
+
+      <!-- EULER MARUYAMA -->
+      <section id="euler" class="mt-6">
+        <h2>3. The Euler–Maruyama Method</h2>
+        <p>
+          Computers cannot work with continuous processes directly. Instead, we use numerical
+          approximations. The Euler–Maruyama method is the stochastic version of the classic
+          Euler method for ordinary differential equations.
+        </p>
+        <p>
+          For a stochastic differential equation:
+        </p>
+        <p class="note text-sm">
+          $$ dX_t = \mu dt + \sigma dW_t $$
+        </p>
+        <p>
+          the method updates the value using:
+        </p>
+        <p class="note text-sm">
+          $$ X_{n+1} = X_n + \mu \Delta t + \sigma \sqrt{\Delta t} Z_n $$
+        </p>
+        <p>
+          Here \(Z_n\) is a normal random number. This gives a very simple and intuitive way
+          to build sample paths step by step.
+        </p>
+      </section>
+
+      <!-- SIMULATOR -->
+      <section id="simulator" class="mt-6">
+        <h2>4. Interactive Demo</h2>
+        <p>
+          Below is a small simulator I wrote in JavaScript. It draws several sample paths of
+          a Wiener Process or of a general SDE with drift and diffusion. The goal is to show
+          how different trajectories evolve even when they share the same model.
+        </p>
+        <p>
+          You can change parameters, generate new paths, and explore the final-value histogram.
+        </p>
+
+        <!-- CONTROLS -->
+        <div class="mt-4 p-4 bg-gray-50 border rounded-lg">
+          <div class="mb-3 font-semibold">Process Type</div>
+          <label class="mr-3"><input type="radio" name="ptype" value="wiener" checked> Wiener Process</label>
+          <label><input type="radio" name="ptype" value="general"> General SDE</label>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div><label>Total time T</label><input id="tMax" type="number" value="1" step="0.1" class="w-full border p-1 rounded"></div>
+            <div><label>Steps</label><input id="steps" type="number" value="400" class="w-full border p-1 rounded"></div>
+            <div><label>Paths</label><input id="paths" type="number" value="5" class="w-full border p-1 rounded"></div>
+            <div><label>Initial value X₀</label><input id="x0" type="number" value="0" class="w-full border p-1 rounded"></div>
+            <div><label>Drift μ</label><input id="mu" type="number" value="0" class="w-full border p-1 rounded"></div>
+            <div><label>Diffusion σ</label><input id="sigma" type="number" value="1" class="w-full border p-1 rounded"></div>
+          </div>
+
+          <button id="simulateBtn" class="mt-4 px-3 py-1 bg-indigo-600 text-white rounded">Run Simulation</button>
+        </div>
+
+        <!-- CANVAS -->
+        <div class="mt-4">
+          <canvas id="plot" width="700" height="350" class="border rounded shadow-sm bg-white"></canvas>
+        </div>
+
+        <!-- HISTOGRAM -->
+        <div class="mt-8">
+          <h3 class="text-lg font-semibold mb-2">Final Value Distribution</h3>
+          <canvas id="histogram" width="700" height="250" class="border rounded shadow-sm bg-white"></canvas>
+          <p class="mt-2 text-sm text-gray-500">
+            The histogram highlights how the final values of all paths are distributed.
+            For the Wiener Process, the shape should resemble a bell curve (Normal distribution).
+          </p>
+        </div>
+
+      </section>
+
+      <section id="differences" class="mt-6">
+        <h2>5. How the Graph Changes: Wiener Process vs General SDE</h2>
+        <p>
+            When using the simulator, one of the most interesting things to observe is how the plot 
+            changes when we switch between the <strong>Wiener Process</strong> and the 
+            <strong>General SDE</strong>. Even if the formulas look similar, the behaviour of the 
+            trajectories is very different. Understanding this difference helps us see how 
+            stochastic models can describe both pure randomness and randomness with a trend.
+        </p>
+
+        <h3>Wiener Process: Pure Random Movement</h3>
+        <p>
+            The Wiener Process represents a type of noise that has no preferred direction. 
+            The update rule contains only the random term, so each step is simply a small
+            positive or negative jump:
+        </p>
+        <p class="note text-sm">
+            $$ X_{n+1} = X_n + \sqrt{\Delta t}\, Z_n $$
+        </p>
+        <p>
+            In the graph, this means that all sample paths stay roughly centered around zero. 
+            They move up and down without any expectation to increase or decrease. 
+            The only thing that grows over time is the <strong>variance</strong>, which makes the 
+            cloud of trajectories spread wider as time goes on.
+        </p>
+
+        <h3>General SDE: Randomness with Structure</h3>
+        <p>
+            When we switch to the general SDE, the update rule includes two extra parts: 
+            the <strong>drift</strong> \( \mu \) and the <strong>diffusion</strong> \( \sigma \):
+        </p>
+        <p class="note text-sm">
+            $$ X_{n+1} = X_n + \mu \Delta t + \sigma \sqrt{\Delta t} Z_n $$
+        </p>
+        <p>
+            The drift controls the average direction of the movement:
+        </p>
+        <ul>
+            <li>If \( \mu &gt; 0 \), the paths tend to move upward.</li>
+            <li>If \( \mu &lt; 0 \), the paths tend to move downward.</li>
+        </ul>
+        <p>
+            The diffusion term \( \sigma \) controls how “nervous” the trajectories are:
+        </p>
+        <ul>
+            <li>A larger \( \sigma \) creates bigger and more chaotic fluctuations.</li>
+            <li>A smaller \( \sigma \) makes the movement smoother.</li>
+        </ul>
+
+        <h3>What We See in the Graph</h3>
+        <p>
+            When plotting several sample paths, the difference becomes very clear:
+        </p>
+        <ul>
+            <li>
+            <strong>Wiener Process:</strong> trajectories stay around zero and spread symmetrically 
+            in both directions, creating a “cloud of noise”.
+            </li>
+            <li>
+            <strong>General SDE:</strong> trajectories follow a visible trend (upward or downward),
+            and the amount of randomness changes based on the value of \( \sigma \).
+            </li>
+        </ul>
+
+        <p class="note">
+            In short: the Wiener Process shows pure randomness, while the General SDE combines 
+            randomness with a controllable structure. This is why the two graphs look 
+            noticeably different even if they use the same numerical method.
+        </p>
+      </section>
+
+
+      <!-- APPLICATIONS -->
+      <section id="applications" class="mt-6">
+        <h2>5. Real-Life Applications</h2>
+        <p>
+          Even if the Wiener Process seems abstract, it is used in many real systems:
+        </p>
+        <ul>
+          <li><strong>Finance:</strong> modelling unpredictable stock movement and market volatility.</li>
+          <li><strong>Physics:</strong> describing diffusion, thermal noise, and molecular motion.</li>
+          <li><strong>Biology:</strong> random movement of molecules in cells.</li>
+          <li><strong>Electronics:</strong> noise in sensors, circuits, and communication channels.</li>
+          <li><strong>Telecommunications:</strong> jitter, random packet delay, network fluctuations.</li>
+        </ul>
+        <p>
+          These applications show that randomness is not a “mistake” but an essential part of many
+          natural and technological processes.
+        </p>
+      </section>
+
+      <!-- CYBERSEC -->
+      <section id="cyber" class="mt-6">
+        <h2>6. Why It Matters in Cyber Security</h2>
+        <p>
+          In cyber security, many behaviours are random or partially random. Attack timing,
+          traffic bursts, scanning patterns, measurement noise, and unpredictable delays
+          can make systems harder to analyse.
+        </p>
+        <ul>
+          <li>Modelling random attack frequency over time.</li>
+          <li>Understanding noise in intrusion detection signals.</li>
+          <li>Studying traffic spikes and unpredictable loads.</li>
+          <li>Simulating risk evolution in uncertain environments.</li>
+        </ul>
+        <p class="note">
+          Stochastic models help security analysts build more resilient systems and reason about
+          probabilities instead of relying only on fixed rules.
+        </p>
+      </section>
+
+      <!-- CONCLUSION -->
+      <section id="conclusion" class="mt-6">
+        <h2>7. Final Thoughts</h2>
+        <p>
+          Exploring the Wiener Process and simulating it with Euler–Maruyama is a good way
+          to understand how mathematical models describe uncertainty. When we visualize random
+          paths or look at the distribution of outcomes, we see how a simple rule can generate
+          complex and unpredictable behaviour.
+        </p>
+        <p>
+          These ideas are powerful, not only in mathematics but in every field where randomness
+          plays a role—from finance to cybersecurity. Understanding stochastic behaviour helps us
+          design stronger, safer, and more adaptive systems.
+        </p>
+      </section>
+
+      <footer class="mt-8 text-sm text-gray-500">
+         © 2025 · Salvatore Salis — Statistics & Cybersecurity
+      </footer>
+
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside class="aside">
+      <div class="card">
+        <h3>Topics</h3>
+        <ul class="list-disc ml-5 text-sm text-gray-600">
+          <li>Wiener Process</li>
+          <li>Brownian Motion</li>
+          <li>Stochastic Differential Equations</li>
+          <li>Euler–Maruyama</li>
+          <li>Numerical Simulation</li>
+        </ul>
+      </div>
+
+      <div class="card mt-4">
+        <h3>Tags</h3>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border">SDE</span>
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border">Stochastic</span>
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border">Simulation</span>
+          <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full text-xs border">Cybersec</span>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</main>
+
+<!-- JS -->
+<script>
+  function randn() {
+    let u = Math.random(), v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function drawHistogram(values) {
+    const canvas = document.getElementById("histogram");
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const bins = 20;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const binWidth = (max - min) / bins;
+
+    const counts = Array(bins).fill(0);
+    values.forEach(v => {
+      const i = Math.min(bins - 1, Math.floor((v - min) / binWidth));
+      counts[i]++;
+    });
+
+    const maxCount = Math.max(...counts);
+    const w = canvas.width / bins;
+
+    counts.forEach((c, i) => {
+      const h = (c / maxCount) * (canvas.height - 20);
+      ctx.fillStyle = "hsl(220, 60%, 60%)";
+      ctx.fillRect(i * w, canvas.height - h, w - 2, h);
+    });
+
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function simulate() {
+    const tMax = parseFloat(document.getElementById("tMax").value);
+    const steps = parseInt(document.getElementById("steps").value);
+    const paths = parseInt(document.getElementById("paths").value);
+
+    const x0 = parseFloat(document.getElementById("x0").value);
+    const mu = parseFloat(document.getElementById("mu").value);
+    const sigma = parseFloat(document.getElementById("sigma").value);
+
+    const type = document.querySelector('input[name="ptype"]:checked').value;
+
+    const dt = tMax / steps;
+    const canvas = document.getElementById("plot");
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth = 1;
+
+    const gridX = 8, gridY = 6;
+    for (let i = 0; i <= gridX; i++) {
+      const x = (i / gridX) * canvas.width;
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let i = 0; i <= gridY; i++) {
+      const y = (i / gridY) * canvas.height;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    let minVal = Infinity, maxVal = -Infinity;
+    let data = [], finals = [];
+
+    for (let p = 0; p < paths; p++) {
+      let arr = [], X = x0;
+      arr.push(X);
+
+      for (let n = 0; n < steps; n++) {
+        const muEff = (type === "wiener" ? 0 : mu);
+        const sigmaEff = (type === "wiener" ? 1 : sigma);
+
+        X = X + muEff * dt + sigmaEff * Math.sqrt(dt) * randn();
+        arr.push(X);
+
+        minVal = Math.min(minVal, X);
+        maxVal = Math.max(maxVal, X);
+      }
+
+      finals.push(arr[arr.length - 1]);
+      data.push(arr);
+    }
+
+    const margin = (maxVal - minVal) * 0.1;
+    minVal -= margin; maxVal += margin;
+
+    const mapX = n => (n / steps) * canvas.width;
+    const mapY = v => canvas.height - ((v - minVal) / (maxVal - minVal)) * canvas.height;
+
+    for (let p = 0; p < paths; p++) {
+      const hue = (p * 260) / (paths + 1);
+      ctx.beginPath();
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = `hsl(${hue}, 65%, 40%)`;
+      ctx.moveTo(0, mapY(data[p][0]));
+
+      for (let n = 1; n <= steps; n++) {
+        ctx.lineTo(mapX(n), mapY(data[p][n]));
+      }
+      ctx.stroke();
+    }
+
+    drawHistogram(finals);
+  }
+
+  document.getElementById("simulateBtn").onclick = simulate;
+  simulate();
+</script>
+
+</body>
+</html>
